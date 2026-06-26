@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct ContentView: View {
     @StateObject var portDetector = PortDetector()
@@ -8,7 +9,7 @@ struct ContentView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Open Ports")
+                Text("Porta")
                     .font(.headline)
                 Spacer()
                 Button(action: { portDetector.refresh() }) {
@@ -42,25 +43,39 @@ struct ContentView: View {
                 .padding(12)
                 .frame(maxWidth: 360, alignment: .leading)
             } else {
-                List(portDetector.ports, id: \.self) { port in
-                    PortRowView(port: port, onKill: {
-                        portDetector.killPort(port)
-                    })
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(Array(portDetector.ports.enumerated()), id: \.element.id) { index, port in
+                            PortRowView(port: port, onKill: {
+                                portDetector.killPort(port)
+                            })
+
+                            if index < portDetector.ports.count - 1 {
+                                Divider()
+                                    .padding(.leading, 12)
+                            }
+                        }
+                    }
                 }
-                .frame(maxWidth: 400, maxHeight: 300)
+                .frame(maxWidth: 400)
+                .frame(height: portListHeight)
+                .background(Color(nsColor: .controlBackgroundColor))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
 
             Divider()
 
             HStack(spacing: 8) {
-                Button("Settings") {
-                    showingSettings = true
+                Button(action: { showingSettings = true }) {
+                    Image(systemName: "gearshape")
                 }
+                .help("Settings")
                 Spacer()
-                Button("Quit") {
-                    NSApplication.shared.terminate(nil)
+                Button(action: { NSApplication.shared.terminate(nil) }) {
+                    Image(systemName: "power")
                 }
                 .keyboardShortcut("q", modifiers: .command)
+                .help("Quit Porta")
             }
             .padding(.top, 8)
         }
@@ -101,6 +116,10 @@ struct ContentView: View {
             ? "Enable at least one preset or add custom ports in Settings to start monitoring."
             : "No open LISTEN ports match your active filters. Try refreshing or updating your settings."
     }
+
+    private var portListHeight: CGFloat {
+        min(CGFloat(portDetector.ports.count) * 66, 300)
+    }
 }
 
 struct PortRowView: View {
@@ -108,39 +127,100 @@ struct PortRowView: View {
     let onKill: () -> Void
     @State private var showConfirmation = false
 
+    private static let relativeFormatter: RelativeDateTimeFormatter = {
+        let f = RelativeDateTimeFormatter()
+        f.unitsStyle = .abbreviated
+        return f
+    }()
+
     var body: some View {
-        HStack {
+        HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Port \(port.number)")
-                    .font(.system(.body, design: .monospaced))
-                    .fontWeight(.semibold)
-                Text("PID: \(port.pid) • \(port.processName)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Text("\(port.networkProtocol) \(port.addressFamily) • \(port.listenAddress)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                Text("Listening on \(port.listeningAddressLabel)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-            Spacer()
-            Button(action: { showConfirmation = true }) {
-                Image(systemName: "xmark.circle.fill")
-            }
-            .help("Kill process")
-            .confirmationDialog(
-                "Kill Process?",
-                isPresented: $showConfirmation
-            ) {
-                Button("Kill", role: .destructive) {
-                    onKill()
+                HStack(alignment: .center, spacing: 8) {
+                    Text(String(port.number))
+                        .font(.system(.title3, design: .monospaced))
+                        .fontWeight(.semibold)
+                        .textSelection(.enabled)
+
+                    scopeBadge
                 }
-            } message: {
-                Text("Terminate process \(port.pid) on port \(port.number)?")
+
+                HStack(spacing: 6) {
+                    Text(port.processName)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(1)
+
+                    Text(verbatim: "PID \(port.pid)")
+                        .font(.caption)
+                        .foregroundColor(.secondary.opacity(0.6))
+
+                    if let startTime = port.startTime {
+                        Spacer()
+                        Text(Self.relativeFormatter.localizedString(for: startTime, relativeTo: Date()))
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+
+            Spacer()
+
+            HStack(spacing: 2) {
+                Button {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(port.processName, forType: .string)
+                    NSWorkspace.shared.open(
+                        URL(fileURLWithPath: "/System/Applications/Utilities/Activity Monitor.app")
+                    )
+                } label: {
+                    Image(systemName: "magnifyingglass.circle.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 28, height: 28)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .help("Open Activity Monitor — \"\(port.processName)\" copied, press ⌘F and paste to find it")
+
+                Button(action: { showConfirmation = true }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.red)
+                        .frame(width: 28, height: 28)
+                        .contentShape(Rectangle())
+                }
+                .help("Kill process")
+                .buttonStyle(.plain)
+                .confirmationDialog(
+                    "Kill Process?",
+                    isPresented: $showConfirmation
+                ) {
+                    Button("Kill", role: .destructive) { onKill() }
+                } message: {
+                    Text(verbatim: "Terminate \(port.processName) (PID \(port.pid)) on port \(port.number)?")
+                }
             }
         }
-        .padding(.vertical, 4)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(minHeight: 64, alignment: .center)
+    }
+
+    private var scopeBadge: some View {
+        let isPublic = !port.isLocalhostOnly
+        return Text(isPublic ? "public" : "local")
+            .font(.caption2)
+            .fontWeight(.medium)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(isPublic ? Color.orange.opacity(0.15) : Color.secondary.opacity(0.12))
+            .foregroundColor(isPublic ? .orange : .secondary)
+            .clipShape(Capsule())
+            .help(isPublic
+                ? "Bound to all interfaces (0.0.0.0) — other machines on your network can connect"
+                : "Bound to localhost — accessible from this machine only"
+            )
     }
 }
 

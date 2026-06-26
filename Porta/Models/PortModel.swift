@@ -11,20 +11,17 @@ struct OpenPort: Hashable, Identifiable {
     let listenAddress: String  // e.g. "0.0.0.0", "127.0.0.1", "*"
     let addressFamily: String  // e.g. "IPv4", "IPv6"
     let networkProtocol: String  // e.g. "TCP"
+    var startTime: Date? = nil
 
     var isLocalhostOnly: Bool {
-        listenAddress == "127.0.0.1" || listenAddress == "::1"
+        listenAddresses.allSatisfy { $0 == "127.0.0.1" || $0 == "::1" }
     }
 
-    var listeningAddressLabel: String {
-        switch listenAddress {
-        case "", "*", "0.0.0.0", "::":
-            return "All interfaces"
-        case "127.0.0.1", "::1":
-            return "localhost only"
-        default:
-            return listenAddress
-        }
+    private var listenAddresses: [String] {
+        listenAddress
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
     }
 
     func hash(into hasher: inout Hasher) {
@@ -41,6 +38,12 @@ struct OpenPort: Hashable, Identifiable {
         lhs.listenAddress == rhs.listenAddress &&
         lhs.addressFamily == rhs.addressFamily &&
         lhs.networkProtocol == rhs.networkProtocol
+    }
+}
+
+private extension String {
+    var formattedListenAddress: String {
+        contains(":") ? "[\(self)]" : self
     }
 }
 
@@ -97,6 +100,23 @@ struct PortPresetGroup {
     let key: String
     let label: String
     let ports: Set<Int>
+
+    var portsLabel: String {
+        guard !ports.isEmpty else { return "" }
+        let sorted = ports.sorted()
+        var ranges: [(Int, Int)] = []
+        var start = sorted[0], end = sorted[0]
+        for port in sorted.dropFirst() {
+            if port == end + 1 {
+                end = port
+            } else {
+                ranges.append((start, end))
+                start = port; end = port
+            }
+        }
+        ranges.append((start, end))
+        return ranges.map { lo, hi in lo == hi ? "\(lo)" : "\(lo)–\(hi)" }.joined(separator: ", ")
+    }
 }
 
 extension PortPresetGroup {
@@ -119,6 +139,7 @@ extension PortPresetGroup {
 
 class PortSettings: ObservableObject {
     static let shared = PortSettings()
+    static let allowedRefreshIntervals = [1, 3, 5, 10, 30, 60]
 
     private let defaults = UserDefaults.standard
 
@@ -132,13 +153,7 @@ class PortSettings: ObservableObject {
     }
 
     @Published var refreshIntervalSeconds: Int {
-        didSet {
-            let clamped = max(1, min(60, refreshIntervalSeconds))
-            if clamped != refreshIntervalSeconds {
-                refreshIntervalSeconds = clamped
-            }
-            save()
-        }
+        didSet { save() }
     }
 
     private init() {
@@ -148,11 +163,8 @@ class PortSettings: ObservableObject {
             enabledPresetKeys = Set(PortPresetGroup.all.map(\.key))
         }
         customPortsInput = defaults.string(forKey: "customPortsInput") ?? ""
-        if let savedInterval = defaults.object(forKey: "refreshIntervalSeconds") as? Int {
-            refreshIntervalSeconds = max(1, min(60, savedInterval))
-        } else {
-            refreshIntervalSeconds = 5
-        }
+        let savedInterval = defaults.object(forKey: "refreshIntervalSeconds") as? Int ?? 5
+        refreshIntervalSeconds = Self.allowedRefreshIntervals.min(by: { abs($0 - savedInterval) < abs($1 - savedInterval) }) ?? 5
     }
 
     private func save() {
@@ -170,22 +182,46 @@ class PortSettings: ObservableObject {
         return ports
     }
 
-    // Parses comma-separated port numbers and ranges (e.g. "4200, 9000-9010").
-    // Invalid entries are filtered out from active port usage and surfaced in the
-    // Settings UI as validation notes (without changing persistence behavior).
     var parsedCustomPorts: [Int] {
         parseCustomPorts(from: customPortsInput).validPorts
     }
 
-    var customPortsValidationMessage: String? {
-        let issues = parseCustomPorts(from: customPortsInput).invalidTokens
-        guard !issues.isEmpty else { return nil }
+    var customPortEntries: [String] {
+        customPortsInput
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+    }
 
-        if issues.count == 1 {
-            return "Invalid custom port entry: \(issues[0])"
+    func isValidEntry(_ text: String) -> Bool {
+        let result = parseCustomPorts(from: text)
+        return result.invalidTokens.isEmpty && !result.validPorts.isEmpty
+    }
+
+    func addCustomEntry(_ text: String) {
+        let incoming = text
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+            .map { normalizeEntry($0) }
+        var entries = customPortEntries
+        for token in incoming where !entries.contains(token) {
+            entries.append(token)
         }
+        customPortsInput = entries.joined(separator: ", ")
+    }
 
-        return "Invalid custom port entries: \(issues.joined(separator: ", "))"
+    func removeCustomEntry(at index: Int) {
+        var entries = customPortEntries
+        guard entries.indices.contains(index) else { return }
+        entries.remove(at: index)
+        customPortsInput = entries.joined(separator: ", ")
+    }
+
+    private func normalizeEntry(_ text: String) -> String {
+        let parts = text.split(separator: "-").map { $0.trimmingCharacters(in: .whitespaces) }
+        if parts.count == 2, parts[0] == parts[1] { return String(parts[0]) }
+        return text
     }
 
     private func parseCustomPorts(from text: String) -> (validPorts: [Int], invalidTokens: [String]) {

@@ -162,19 +162,16 @@ class PortDetector: ObservableObject {
     /// Re-reads lsof before signaling to verify the selected listener still exists.
     private func isPortStillOwned(_ port: OpenPort) -> Result<Bool, DetectionError> {
         let result = runLsof(arguments: ["-iTCP:\(port.number)", "-sTCP:LISTEN", "-P", "-n", "-F", "pcPtn"])
-        guard case .success(let lsofResult) = result else {
-            if case .failure(let error) = result {
-                return .failure(error)
+        switch result {
+        case .failure(let error):
+            return .failure(error)
+        case .success(let lsofResult):
+            if lsofResult.exitStatus != 0, !lsofResult.errorOutput.isEmpty {
+                return .failure(.lsofFailed(lsofResult.errorOutput))
             }
-            return .success(false)
+            let listeners = parseLsofMachineOutput(lsofResult.output, filter: [port.number])
+            return .success(listeners.contains { $0.number == port.number && $0.pid == port.pid })
         }
-
-        if lsofResult.exitStatus != 0, !lsofResult.errorOutput.isEmpty {
-            return .failure(.lsofFailed(lsofResult.errorOutput))
-        }
-
-        let listeners = parseLsofMachineOutput(lsofResult.output, filter: [port.number])
-        return .success(listeners.contains(port))
     }
 
     private func detectOpenPorts(filter: Set<Int>) -> Result<[OpenPort], DetectionError> {
@@ -192,7 +189,12 @@ class PortDetector: ObservableObject {
             return .failure(.lsofFailed(lsofResult.errorOutput))
         }
 
-        return .success(parseLsofMachineOutput(lsofResult.output, filter: filter))
+        let coalesced = coalesceOpenPorts(parseLsofMachineOutput(lsofResult.output, filter: filter))
+        return .success(coalesced.map { port in
+            var p = port
+            p.startTime = processStartTime(pid: port.pid)
+            return p
+        })
     }
 
     private func runLsof(arguments: [String]) -> Result<LsofResult, DetectionError> {
@@ -233,7 +235,7 @@ class PortDetector: ObservableObject {
     ///   t<type>       – file type, e.g. IPv4 or IPv6
     ///   f<fd>         – file-descriptor separator (always emitted, ignored here)
     ///   n<addr:port>  – network name field → emit OpenPort if port is in filter
-    private func parseLsofMachineOutput(_ output: String, filter: Set<Int>) -> [OpenPort] {
+    func parseLsofMachineOutput(_ output: String, filter: Set<Int>) -> [OpenPort] {
         var result: [OpenPort] = []
         var currentPID = 0
         var currentCommand = ""
@@ -284,9 +286,50 @@ class PortDetector: ObservableObject {
         return result
     }
 
+    func coalesceOpenPorts(_ ports: [OpenPort]) -> [OpenPort] {
+        var coalesced: [OpenPort] = []
+
+        for port in ports {
+            if let index = coalesced.firstIndex(where: {
+                $0.number == port.number &&
+                $0.pid == port.pid &&
+                $0.processName == port.processName &&
+                $0.networkProtocol == port.networkProtocol
+            }) {
+                let existing = coalesced[index]
+                let addresses = uniqueSorted(existing.listenAddress, port.listenAddress)
+                let families = uniqueSorted(existing.addressFamily, port.addressFamily, separator: "/")
+                coalesced[index] = OpenPort(
+                    number: existing.number,
+                    pid: existing.pid,
+                    processName: existing.processName,
+                    listenAddress: addresses.joined(separator: ", "),
+                    addressFamily: families.joined(separator: "/"),
+                    networkProtocol: existing.networkProtocol
+                )
+            } else {
+                coalesced.append(port)
+            }
+        }
+
+        return coalesced
+    }
+
+    private func uniqueSorted(_ first: String, _ second: String, separator: String = ",") -> [String] {
+        Array(
+            Set(
+                [first, second]
+                    .flatMap { $0.split(separator: Character(separator)).map(String.init) }
+                    .map { $0.trimmingCharacters(in: .whitespaces) }
+                    .filter { !$0.isEmpty }
+            )
+        )
+        .sorted()
+    }
+
     /// Parses an lsof NAME field into (address, port).
     /// Handles: "*:3000"  "127.0.0.1:8000"  "[::1]:8080"
-    private func parseNameField(_ name: String) -> (address: String, port: Int)? {
+    func parseNameField(_ name: String) -> (address: String, port: Int)? {
         // IPv6: "[::1]:8080"
         if name.hasPrefix("[") {
             guard let closeBracket = name.firstIndex(of: "]") else { return nil }
@@ -301,6 +344,15 @@ class PortDetector: ObservableObject {
         let portStr = String(name[name.index(after: lastColon)...])
         guard let port = Int(portStr) else { return nil }
         return (address, port)
+    }
+
+    private func processStartTime(pid: Int) -> Date? {
+        var info = kinfo_proc()
+        var size = MemoryLayout<kinfo_proc>.stride
+        var mib: [Int32] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, Int32(pid)]
+        guard sysctl(&mib, 4, &info, &size, nil, 0) == 0, size > 0 else { return nil }
+        let tv = info.kp_proc.p_starttime
+        return Date(timeIntervalSince1970: Double(tv.tv_sec) + Double(tv.tv_usec) / 1_000_000)
     }
 
     private func scheduleRefresh() {
