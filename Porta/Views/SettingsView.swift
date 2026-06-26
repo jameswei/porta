@@ -1,8 +1,14 @@
 import SwiftUI
+import ServiceManagement
 
 struct SettingsView: View {
     @ObservedObject var settings: PortSettings
     @Environment(\.dismiss) private var dismiss
+
+    @State private var launchAtLoginEnabled = false
+    @State private var launchAtLoginStatus = "Disabled"
+    @State private var launchAtLoginError: String?
+    @State private var isUpdatingLaunchAtLogin = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -39,6 +45,31 @@ struct SettingsView: View {
                     .foregroundColor(.secondary)
             }
 
+            Divider()
+
+            Text("Launch at login")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            Toggle("Launch Porta at login", isOn: Binding(
+                get: { launchAtLoginEnabled },
+                set: { isEnabled in
+                    applyLaunchAtLoginChange(enabled: isEnabled)
+                }
+            ))
+            .disabled(isUpdatingLaunchAtLogin)
+
+            Text("Status: \(launchAtLoginStatus)")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            if let message = launchAtLoginError {
+                Text(message)
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             Spacer(minLength: 0)
 
             HStack {
@@ -50,6 +81,9 @@ struct SettingsView: View {
         }
         .padding()
         .frame(width: 360)
+        .onAppear {
+            refreshLaunchAtLoginState()
+        }
     }
 
     private func binding(for presetKey: String) -> Binding<Bool> {
@@ -65,6 +99,55 @@ struct SettingsView: View {
                 settings.enabledPresetKeys = updated
             }
         )
+    }
+
+    private func refreshLaunchAtLoginState(clearError: Bool = true) {
+        let status = SMAppService.mainApp.status
+        launchAtLoginStatus = launchAtLoginStatusLabel(for: status)
+        launchAtLoginEnabled = status == .enabled
+        if clearError {
+            launchAtLoginError = nil
+        }
+    }
+
+    private func applyLaunchAtLoginChange(enabled: Bool) {
+        launchAtLoginEnabled = enabled
+        launchAtLoginError = nil
+        isUpdatingLaunchAtLogin = true
+
+        Task {
+            var updateError: String?
+            do {
+                if enabled {
+                    try SMAppService.mainApp.register()
+                } else {
+                    try await SMAppService.mainApp.unregister()
+                }
+            } catch {
+                updateError = "Could not update launch-at-login setting: \(error.localizedDescription)"
+            }
+
+            await MainActor.run {
+                refreshLaunchAtLoginState(clearError: updateError == nil)
+                launchAtLoginError = updateError
+                isUpdatingLaunchAtLogin = false
+            }
+        }
+    }
+
+    private func launchAtLoginStatusLabel(for status: SMAppService.Status) -> String {
+        switch status {
+        case .enabled:
+            return "Enabled"
+        case .requiresApproval:
+            return "Requires approval"
+        case .notFound:
+            return "Unavailable"
+        case .notRegistered:
+            return "Disabled"
+        @unknown default:
+            return "Unknown"
+        }
     }
 }
 
