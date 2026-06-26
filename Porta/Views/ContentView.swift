@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var portDetector = PortDetector()
+    @StateObject private var settings = PortSettings.shared
+    @State private var showingSettings = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -44,7 +46,7 @@ struct ContentView: View {
 
             HStack(spacing: 8) {
                 Button("Settings") {
-                    // TODO: Open settings window
+                    showingSettings = true
                 }
                 Spacer()
                 Button("Quit") {
@@ -58,6 +60,14 @@ struct ContentView: View {
         .frame(minWidth: 300)
         .onAppear {
             portDetector.startMonitoring()
+        }
+        .onChange(of: showingSettings) { isPresented in
+            if !isPresented {
+                portDetector.refresh()
+            }
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView(settings: settings)
         }
         .alert(
             "Could Not Kill Process",

@@ -10,6 +10,7 @@
 		A1B2C3D4E5F6A1B2C3D4E5B1 /* PortaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A1B2C3D4E5A2 /* PortaApp.swift */; };
 		A1B2C3D4E5F6A1B2C3D4E5B2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A1B2C3D4E5A3 /* AppDelegate.swift */; };
 		A1B2C3D4E5F6A1B2C3D4E5B3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A1B2C3D4E5A4 /* ContentView.swift */; };
+		B0B1C2D3E4F5A6B7C8D9E0F3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B1C2D3E4F5A6B7C8D9E0F2 /* SettingsView.swift */; };
 		A1B2C3D4E5F6A1B2C3D4E5B4 /* PortModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A1B2C3D4E5A5 /* PortModel.swift */; };
 		A1B2C3D4E5F6A1B2C3D4E5B5 /* PortDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A1B2C3D4E5A6 /* PortDetector.swift */; };
 		A1B2C3D4E5F6A1B2C3D4E5B6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A1B2C3D4E5A8 /* Assets.xcassets */; };
@@ -20,6 +21,7 @@
 		A1B2C3D4E5F6A1B2C3D4E5A2 /* PortaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortaApp.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A1B2C3D4E5A3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A1B2C3D4E5A4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B0B1C2D3E4F5A6B7C8D9E0F2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A1B2C3D4E5A5 /* PortModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortModel.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A1B2C3D4E5A6 /* PortDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortDetector.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A1B2C3D4E5A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				A1B2C3D4E5F6A1B2C3D4E5A4 /* ContentView.swift */,
+				B0B1C2D3E4F5A6B7C8D9E0F2 /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -165,6 +168,7 @@
 				A1B2C3D4E5F6A1B2C3D4E5B1 /* PortaApp.swift in Sources */,
 				A1B2C3D4E5F6A1B2C3D4E5B2 /* AppDelegate.swift in Sources */,
 				A1B2C3D4E5F6A1B2C3D4E5B3 /* ContentView.swift in Sources */,
+				B0B1C2D3E4F5A6B7C8D9E0F3 /* SettingsView.swift in Sources */,
 				A1B2C3D4E5F6A1B2C3D4E5B4 /* PortModel.swift in Sources */,
 				A1B2C3D4E5F6A1B2C3D4E5B5 /* PortDetector.swift in Sources */,
 			);
@@ -357,4 +361,3 @@
 	};
 	rootObject = A1B2C3D4E5F6A1B2C3D4E5F1 /* Project object */;
 }
-

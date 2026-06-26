@@ -144,25 +144,53 @@ class PortSettings: ObservableObject {
     }
 
     // Parses comma-separated port numbers and ranges (e.g. "4200, 9000-9010").
-    // Silently drops: non-integers, ports outside 1...65535, ranges wider than 1000.
-    // Invalid input will be surfaced to the user in the Settings UI (Phase 3).
+    // Invalid entries are filtered out from active port usage and surfaced in the
+    // Settings UI as validation notes (without changing persistence behavior).
     var parsedCustomPorts: [Int] {
-        customPortsInput
-            .split(separator: ",")
-            .flatMap { token -> [Int] in
-                let trimmed = token.trimmingCharacters(in: .whitespaces)
-                if let single = Int(trimmed), (1...65535).contains(single) {
-                    return [single]
-                }
-                let parts = trimmed.split(separator: "-")
-                if parts.count == 2,
-                   let lo = Int(parts[0]), let hi = Int(parts[1]),
-                   lo <= hi,
-                   (1...65535).contains(lo), (1...65535).contains(hi),
-                   (hi - lo) <= 1000 {
-                    return Array(lo...hi)
-                }
-                return []
+        parseCustomPorts(from: customPortsInput).validPorts
+    }
+
+    var customPortsValidationMessage: String? {
+        let issues = parseCustomPorts(from: customPortsInput).invalidTokens
+        guard !issues.isEmpty else { return nil }
+
+        if issues.count == 1 {
+            return "Invalid custom port entry: \(issues[0])"
+        }
+
+        return "Invalid custom port entries: \(issues.joined(separator: ", "))"
+    }
+
+    private func parseCustomPorts(from text: String) -> (validPorts: [Int], invalidTokens: [String]) {
+        var validPorts: [Int] = []
+        var invalidTokens: [String] = []
+
+        for token in text.split(separator: ",") {
+            let trimmed = token.trimmingCharacters(in: .whitespaces)
+            if trimmed.isEmpty {
+                continue
             }
+
+            if let single = Int(trimmed), (1...65535).contains(single) {
+                validPorts.append(single)
+                continue
+            }
+
+            let parts = trimmed.split(separator: "-").map { $0.trimmingCharacters(in: .whitespaces) }
+            if parts.count == 2,
+               let lo = Int(parts[0]),
+               let hi = Int(parts[1]),
+               lo <= hi,
+               (1...65535).contains(lo),
+               (1...65535).contains(hi),
+               (hi - lo) <= 1000 {
+                validPorts.append(contentsOf: lo...hi)
+                continue
+            }
+
+            invalidTokens.append(String(trimmed))
+        }
+
+        return (validPorts, invalidTokens)
     }
 }
