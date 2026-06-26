@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: macos-15
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
+
+      - name: Build (Release)
+        run: |
+          xcodebuild \
+            -project Porta.xcodeproj \
+            -scheme Porta \
+            -configuration Release \
+            -derivedDataPath .build/dd \
+            -destination "platform=macOS" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package
+        run: |
+          cd .build/dd/Build/Products/Release
+          zip -r Porta.zip Porta.app
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            .build/dd/Build/Products/Release/Porta.zip \
+            --title "Porta ${{ github.ref_name }}" \
+            --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
