@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n-html="pageTitle">Porta — Kill orphan dev ports</title>
+  <meta name="description" data-i18n="metaDesc" content="A lightweight macOS menu-bar app that finds and kills orphan dev-server ports left by coding agents." />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav">
+    <div class="container nav__inner">
+      <a href="#" class="nav__logo">
+        <img src="https://cdn-icons-png.flaticon.com/512/5022/5022090.png" alt="Porta icon" class="nav__logo-icon" />
+        <span class="nav__logo-text">Porta</span>
+      </a>
+      <nav class="nav__links">
+        <a href="#about" data-i18n="navAbout">About</a>
+        <a href="#capabilities" data-i18n="navCapabilities">Features</a>
+        <a href="#stack" data-i18n="navStack">Stack</a>
+        <a href="#cli" data-i18n="navCli">Install</a>
+      </nav>
+      <div class="nav__actions">
+        <button class="btn-lang" id="lang-toggle" onclick="toggleLanguage()">中文</button>
+        <a href="https://github.com/jameswei/porta" class="btn btn--outline" target="_blank" rel="noopener">GitHub →</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__badge" data-i18n="heroBadge">macOS 13+ · Zero Dependencies · Free</div>
+      <h1 class="hero__title">Porta</h1>
+      <p class="hero__tagline" data-i18n="heroTagline">
+        Surfaces and kills orphan listening ports<br class="br-desktop" /> left by coding agents.
+      </p>
+      <p class="hero__sub" data-i18n="heroSub">
+        When AI coding agents (or any dev tool) leave processes running after a session ends, those processes keep holding TCP ports. Porta sits in your menu bar and lets you clean them up with one click.
+      </p>
+      <div class="hero__cta">
+        <a href="https://github.com/jameswei/porta" class="btn btn--primary" target="_blank" rel="noopener" data-i18n="heroCtaPrimary">View on GitHub</a>
+        <a href="#about" class="btn btn--secondary" data-i18n="heroCtaSecondary">Learn more ↓</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about">
+    <div class="container about__inner">
+      <h2 data-i18n="aboutTitle">Why Porta?</h2>
+      <div class="about__body">
+        <p data-i18n="aboutP1">
+          When AI coding agents (or any dev tool) leave processes running after a session ends, those processes keep holding TCP ports. Over time, these orphaned processes accumulate, consuming ports and system resources silently in the background.
+        </p>
+        <p data-i18n="aboutP2">
+          Porta sits quietly in your macOS menu bar, continuously running <code>lsof -iTCP -sTCP:LISTEN</code> on a configurable timer. Separate IPv4 and IPv6 entries for the same process are coalesced into a single row — no duplicates, no noise. Just a clean list of what's running and a single click to stop it.
+        </p>
+        <p data-i18n="aboutP3">
+          Lightweight by design: no Dock icon, near-zero CPU and memory usage, and zero third-party dependencies. Built with Swift and SwiftUI, it works entirely through standard macOS APIs.
+        </p>
+        <p class="about__link">
+          <a href="https://github.com/jameswei/porta" target="_blank" rel="noopener" data-i18n="aboutCta">Explore the source on GitHub →</a>
+        </p>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats">
+        <div class="stats__card">
+          <span class="stats__num">0</span>
+          <span class="stats__label" data-i18n="stat1">Third-party dependencies</span>
+        </div>
+        <div class="stats__card">
+          <span class="stats__num">11</span>
+          <span class="stats__label" data-i18n="stat2">Preset tool categories</span>
+        </div>
+        <div class="stats__card">
+          <span class="stats__num">6</span>
+          <span class="stats__label" data-i18n="stat3">Refresh intervals</span>
+        </div>
+        <div class="stats__card">
+          <span class="stats__num">28</span>
+          <span class="stats__label" data-i18n="stat4">Unit tests</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section id="capabilities" class="capabilities">
+    <div class="container">
+      <h2 data-i18n="capTitle">Features</h2>
+      <p class="section-sub" data-i18n="capSub">Everything you need to stay on top of orphan ports.</p>
+      <div class="cap-grid">
+
+        <div class="cap-card">
+          <div class="cap-card__icon">🔍</div>
+          <h3 data-i18n="cap1Title">Detect Listening Ports</h3>
+          <p data-i18n="cap1Desc">Powered by <code>lsof</code>, surfaces TCP LISTEN-state ports from your configured dev tools. Updated at your chosen refresh interval.</p>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card__icon">💀</div>
+          <h3 data-i18n="cap2Title">Kill with One Click</h3>
+          <p data-i18n="cap2Desc">Re-verifies the PID still owns the port before acting. Sends SIGTERM, waits 2 seconds, then escalates to SIGKILL if the process persists.</p>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card__icon">🛡️</div>
+          <h3 data-i18n="cap3Title">Scope Badge</h3>
+          <p data-i18n="cap3Desc">Each port shows <strong>local</strong> (localhost-only) or <strong>public</strong> (all interfaces) so you know your exposure at a glance.</p>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card__icon">⏱️</div>
+          <h3 data-i18n="cap4Title">Relative Uptime</h3>
+          <p data-i18n="cap4Desc">See how long each process has been running — "5h ago", "2 min ago" — to quickly spot stale servers.</p>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card__icon">⚙️</div>
+          <h3 data-i18n="cap5Title">Configurable Presets</h3>
+          <p data-i18n="cap5Desc">11 tool categories to toggle: Node.js/npm, Vite/Webpack, Python, Ruby/Rails, Go, Java/Spring, PostgreSQL, MySQL, Redis, MongoDB, and more.</p>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card__icon">🎯</div>
+          <h3 data-i18n="cap6Title">Custom Ports &amp; Ranges</h3>
+          <p data-i18n="cap6Desc">Add individual port numbers or ranges (e.g. <code>9000–9010</code>) with per-entry validation. Flexible enough for any workflow.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section id="stack" class="stack">
+    <div class="container">
+      <h2 data-i18n="stackTitle">Tech Stack</h2>
+      <p class="section-sub" data-i18n="stackSub">Built on macOS-native APIs. No framework overhead.</p>
+      <table class="stack-table">
+        <tbody>
+          <tr>
+            <td class="stack-table__label" data-i18n="stackLang">Language</td>
+            <td class="stack-table__val">Swift 5.9+</td>
+          </tr>
+          <tr>
+            <td class="stack-table__label" data-i18n="stackPlatform">Platform</td>
+            <td class="stack-table__val">macOS 13.0 (Ventura) +</td>
+          </tr>
+          <tr>
+            <td class="stack-table__label" data-i18n="stackUi">UI Framework</td>
+            <td class="stack-table__val">SwiftUI + AppKit (<code>NSStatusItem</code>, <code>NSPopover</code>)</td>
+          </tr>
+          <tr>
+            <td class="stack-table__label" data-i18n="stackDetection">Port Detection</td>
+            <td class="stack-table__val"><code>lsof -iTCP -sTCP:LISTEN -P -n -F pcPtn</code></td>
+          </tr>
+          <tr>
+            <td class="stack-table__label" data-i18n="stackPersistence">Persistence</td>
+            <td class="stack-table__val">UserDefaults — no database, no files</td>
+          </tr>
+          <tr>
+            <td class="stack-table__label" data-i18n="stackDeps">Dependencies</td>
+            <td class="stack-table__val">Zero third-party dependencies</td>
+          </tr>
+          <tr>
+            <td class="stack-table__label" data-i18n="stackLogin">Login Item</td>
+            <td class="stack-table__val"><code>SMAppService</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CLI / INSTALL -->
+  <section id="cli" class="cli">
+    <div class="container">
+      <h2 data-i18n="cliTitle">Build from Source</h2>
+      <p class="section-sub" data-i18n="cliSub">Requires Xcode 15+ and any Apple ID (free) for local signing.</p>
+      <div class="terminal">
+        <div class="terminal__bar">
+          <span class="terminal__dot terminal__dot--red"></span>
+          <span class="terminal__dot terminal__dot--yellow"></span>
+          <span class="terminal__dot terminal__dot--green"></span>
+        </div>
+        <pre class="terminal__body"><code><span class="terminal__prompt">$</span> git clone https://github.com/jameswei/porta.git
+<span class="terminal__prompt">$</span> cd porta
+<span class="terminal__prompt">$</span> open Porta.xcodeproj
+<span class="terminal__comment"># Press ⌘R in Xcode to build and run</span>
+
+<span class="terminal__comment"># Gatekeeper bypass for downloaded releases</span>
+<span class="terminal__prompt">$</span> xattr -cr /path/to/Porta.app &amp;&amp; open /path/to/Porta.app</code></pre>
+      </div>
+      <p class="cli__docs">
+        <a href="https://github.com/jameswei/porta#build-from-source" target="_blank" rel="noopener" data-i18n="cliDocsLink">Full build instructions on GitHub →</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container cta__inner">
+      <h2 data-i18n="ctaTitle">Interested in the source?</h2>
+      <p data-i18n="ctaDesc">Porta is open-source under the MIT license. Star it, fork it, or open an issue.</p>
+      <a href="https://github.com/jameswei/porta" class="btn btn--primary" target="_blank" rel="noopener" data-i18n="ctaBtn">View on GitHub</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__built" data-i18n-html="footerBuilt">
+        Built by <a href="https://www.linkedin.com/in/jamesweipek/" target="_blank" rel="noopener">James Wei</a>
+      </p>
+      <nav class="footer__links">
+        <a href="https://github.com/jameswei" target="_blank" rel="noopener" data-i18n="footerGithub">GitHub Profile</a>
+        <a href="https://www.linkedin.com/in/jamesweipek/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/jameswei/porta" target="_blank" rel="noopener" data-i18n="footerRepo">Repository</a>
+      </nav>
+      <p class="footer__license" data-i18n="footerLicense">MIT License</p>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+</body>
+</html>
