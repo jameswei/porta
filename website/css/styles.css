@@ -314,6 +314,73 @@ h2 {
 }
 
 /* ============================================================
+   Screenshots
+   ============================================================ */
+.screenshots { background: var(--color-bg); }
+
+.screenshots-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+@media (min-width: 760px) {
+  .screenshots-grid {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 3.5rem;
+  }
+}
+
+.screenshot-card {
+  margin: 0;
+  text-align: center;
+}
+
+.screenshot-card--main     { max-width: 340px; width: 100%; }
+.screenshot-card--settings { max-width: 260px; width: 100%; }
+
+.screenshot-card__frame {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.08);
+  line-height: 0;
+  transition: box-shadow .25s, transform .25s;
+}
+.screenshot-card__frame:hover {
+  box-shadow: 0 16px 48px rgba(0,0,0,.18), 0 4px 12px rgba(0,0,0,.1);
+  transform: translateY(-4px);
+}
+
+.screenshot-card__frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+}
+
+.screenshot-card figcaption {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+
+.screenshot-card figcaption strong {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.screenshot-card figcaption span {
+  font-size: .82rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* ============================================================
    Capabilities
    ============================================================ */
 .capabilities { background: var(--color-bg-alt); }
