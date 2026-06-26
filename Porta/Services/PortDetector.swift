@@ -7,24 +7,44 @@ class PortDetector: ObservableObject {
     @Published var detectionError: DetectionError?
     @Published var lastKillError: KillResult?
 
-    private var monitoringTimer: Timer?
-    private let refreshInterval: TimeInterval = 5.0
     private let settings: PortSettings
+    private var isMonitoring = false
+    private var monitoringTimer: Timer?
+    private var cancellables: Set<AnyCancellable> = []
 
     init(settings: PortSettings = .shared) {
         self.settings = settings
+        settings.$refreshIntervalSeconds
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.restartMonitoringTimer()
+            }
+            .store(in: &cancellables)
     }
 
     func startMonitoring() {
+        isMonitoring = true
         refresh()
-        monitoringTimer = Timer.scheduledTimer(withTimeInterval: refreshInterval, repeats: true) { [weak self] _ in
-            self?.refresh()
-        }
+        startMonitoringTimer()
     }
 
     func stopMonitoring() {
         monitoringTimer?.invalidate()
         monitoringTimer = nil
+        isMonitoring = false
+    }
+
+    private func startMonitoringTimer() {
+        monitoringTimer?.invalidate()
+        monitoringTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(settings.refreshIntervalSeconds), repeats: true) { [weak self] _ in
+            self?.refresh()
+        }
+    }
+
+    private func restartMonitoringTimer() {
+        guard isMonitoring else { return }
+        monitoringTimer?.invalidate()
+        startMonitoringTimer()
     }
 
     func refresh() {

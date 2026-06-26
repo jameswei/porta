@@ -14,7 +14,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
         if let button = statusBarItem?.button {
-            button.title = "⚓"
+            if let image = NSImage(
+                systemSymbolName: "antenna.radiowaves.left.and.right",
+                accessibilityDescription: "Porta"
+            ) {
+                image.isTemplate = true
+                button.image = image
+            } else {
+                button.title = "Porta"
+            }
             button.action = #selector(togglePopover(_:))
             button.target = self
         }

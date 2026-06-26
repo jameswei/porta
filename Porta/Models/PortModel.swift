@@ -16,6 +16,17 @@ struct OpenPort: Hashable, Identifiable {
         listenAddress == "127.0.0.1" || listenAddress == "::1"
     }
 
+    var listeningAddressLabel: String {
+        switch listenAddress {
+        case "", "*", "0.0.0.0", "::":
+            return "All interfaces"
+        case "127.0.0.1", "::1":
+            return "localhost only"
+        default:
+            return listenAddress
+        }
+    }
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(number)
         hasher.combine(pid)
@@ -120,6 +131,16 @@ class PortSettings: ObservableObject {
         didSet { save() }
     }
 
+    @Published var refreshIntervalSeconds: Int {
+        didSet {
+            let clamped = max(1, min(60, refreshIntervalSeconds))
+            if clamped != refreshIntervalSeconds {
+                refreshIntervalSeconds = clamped
+            }
+            save()
+        }
+    }
+
     private init() {
         if let saved = defaults.stringArray(forKey: "enabledPresetKeys") {
             enabledPresetKeys = Set(saved)
@@ -127,11 +148,17 @@ class PortSettings: ObservableObject {
             enabledPresetKeys = Set(PortPresetGroup.all.map(\.key))
         }
         customPortsInput = defaults.string(forKey: "customPortsInput") ?? ""
+        if let savedInterval = defaults.object(forKey: "refreshIntervalSeconds") as? Int {
+            refreshIntervalSeconds = max(1, min(60, savedInterval))
+        } else {
+            refreshIntervalSeconds = 5
+        }
     }
 
     private func save() {
         defaults.set(Array(enabledPresetKeys), forKey: "enabledPresetKeys")
         defaults.set(customPortsInput, forKey: "customPortsInput")
+        defaults.set(refreshIntervalSeconds, forKey: "refreshIntervalSeconds")
     }
 
     var activePorts: Set<Int> {

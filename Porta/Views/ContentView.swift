@@ -29,10 +29,18 @@ struct ContentView: View {
                 }
                 .padding(12)
             } else if portDetector.ports.isEmpty {
-                Text("No open ports detected")
-                    .foregroundColor(.secondary)
-                    .font(.caption)
-                    .padding(12)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(emptyStateTitle)
+                        .foregroundColor(.secondary)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    Text(emptyStateDescription)
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(12)
+                .frame(maxWidth: 360, alignment: .leading)
             } else {
                 List(portDetector.ports, id: \.self) { port in
                     PortRowView(port: port, onKill: {
@@ -57,7 +65,7 @@ struct ContentView: View {
             .padding(.top, 8)
         }
         .padding(12)
-        .frame(minWidth: 300)
+        .frame(minWidth: 320)
         .onAppear {
             portDetector.startMonitoring()
         }
@@ -81,6 +89,18 @@ struct ContentView: View {
             Text(portDetector.lastKillError?.userMessage ?? "")
         }
     }
+
+    private var emptyStateTitle: String {
+        settings.activePorts.isEmpty
+            ? "No ports are being monitored"
+            : "No matching ports found"
+    }
+
+    private var emptyStateDescription: String {
+        settings.activePorts.isEmpty
+            ? "Enable at least one preset or add custom ports in Settings to start monitoring."
+            : "No open LISTEN ports match your active filters. Try refreshing or updating your settings."
+    }
 }
 
 struct PortRowView: View {
@@ -98,6 +118,9 @@ struct PortRowView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 Text("\(port.networkProtocol) \(port.addressFamily) • \(port.listenAddress)")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                Text("Listening on \(port.listeningAddressLabel)")
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }

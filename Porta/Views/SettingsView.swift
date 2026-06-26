@@ -47,6 +47,19 @@ struct SettingsView: View {
 
             Divider()
 
+            Text("Refresh interval")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            Stepper(value: $settings.refreshIntervalSeconds, in: 1...60) {
+                Text("Refresh every \(settings.refreshIntervalSeconds) second\(settings.refreshIntervalSeconds == 1 ? "" : "s")")
+            }
+            Text("1-60 seconds.")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Divider()
+
             Text("Launch at login")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
