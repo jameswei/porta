@@ -1,5 +1,7 @@
 # Porta
 
+**Project site:** https://jameswei.github.io/porta/
+
 > A lightweight macOS menu-bar app that finds and kills orphan dev-server ports left by coding agents.
 
 When AI coding agents launch development servers during sessions, those servers often keep running after the session ends. Porta sits in your menu bar, shows you all listening TCP ports matching your dev-tool presets, and lets you kill them with one click.
@@ -75,7 +77,7 @@ open /path/to/Porta.app
 
 ## Architecture
 
-See [`AGENTS.md`](./AGENTS.md) for architecture overview and coding conventions.
+See [`docs/architecture.md`](./docs/architecture.md) for component structure, key design decisions, coding conventions, and testing guide.
 
 ## License
 
