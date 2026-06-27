@@ -1,6 +1,6 @@
 # Porta
 
-**Project site:** https://jameswei.github.io/porta/
+**Project site:** https://jameswei.github.io/porta/ · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
 
 > A lightweight macOS menu-bar app that surfaces and kills orphan listening ports left by coding agents.
 
