@@ -8,7 +8,7 @@ const translations = {
     navStack:       "Stack",
     navCli:         "Install",
     heroBadge:      "macOS 13+ · Zero Dependencies · Free",
-    heroTagline:    "Surfaces and kills orphan listening ports left by coding agents.",
+    heroTagline:    "Surfaces and kills orphan listening ports<br class=\"br-desktop\" /> left by coding agents.",
     heroSub:        "When AI coding agents (or any dev tool) leave processes running after a session ends, those processes keep holding TCP ports. Porta sits in your menu bar and lets you clean them up with one click.",
     heroCtaPrimary: "View on GitHub",
     heroCtaSecondary:"Learn more ↓",
