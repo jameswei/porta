@@ -1,6 +1,6 @@
 # Porta
 
-**Project site:** https://jameswei.github.io/porta/ · **Changelog:** [CHANGELOG.md](./CHANGELOG.md)
+**Project site:** https://jameswei.github.io/porta/ · [简体中文](./README.zh-CN.md)
 
 > A lightweight macOS menu-bar app that surfaces and kills orphan listening ports left by coding agents.
 
@@ -82,6 +82,15 @@ open /path/to/Porta.app
 ## Architecture
 
 See [`docs/architecture.md`](./docs/architecture.md) for component structure, key design decisions, coding conventions, and testing guide.
+
+## Changelog
+
+| Version | Date | Highlights |
+|---------|------|------------|
+| [v1.1.0](./CHANGELOG.md#110---2026-06-27) | 2026-06-27 | In-app Simplified Chinese, Monitor All Ports toggle, system daemon exclusion |
+| [v1.0.0](./CHANGELOG.md#100---2026-06-26) | 2026-06-26 | Initial release — scope badge, relative uptime, presets, custom ports, 28 unit tests |
+
+See [CHANGELOG.md](./CHANGELOG.md) for full details.
 
 ## License
 
