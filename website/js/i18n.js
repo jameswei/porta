@@ -99,7 +99,7 @@ const translations = {
     cap3Title:      "暴露范围标识",
     cap3Desc:       "每个端口显示 <strong>local</strong>（仅本机）或 <strong>public</strong>（所有接口），一眼看清暴露范围。",
     cap4Title:      "相对运行时间",
-    cap4Desc:       "显示每个进程的运行时长——"5h ago"、"2 min ago"——快速发现积压已久的服务。",
+    cap4Desc:       "显示每个进程的运行时长——\"5h ago\"、\"2 min ago\"——快速发现积压已久的服务。",
     cap5Title:      "可配置预设",
     cap5Desc:       "11 个工具类别可按需开关：Node.js/npm、Vite/Webpack、Python、Ruby/Rails、Go、Java/Spring、PostgreSQL、MySQL、Redis、MongoDB 等。",
     cap6Title:      "自定义端口和范围",

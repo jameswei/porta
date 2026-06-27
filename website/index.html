@@ -56,7 +56,7 @@
         <p data-i18n="aboutP1">
           When AI coding agents (or any dev tool) leave processes running after a session ends, those processes keep holding TCP ports. Over time, these orphaned processes accumulate, consuming ports and system resources silently in the background.
         </p>
-        <p data-i18n="aboutP2">
+        <p data-i18n-html="aboutP2">
           Porta sits quietly in your macOS menu bar, continuously running <code>lsof -iTCP -sTCP:LISTEN</code> on a configurable timer. Separate IPv4 and IPv6 entries for the same process are coalesced into a single row — no duplicates, no noise. Just a clean list of what's running and a single click to stop it.
         </p>
         <p data-i18n="aboutP3">
@@ -127,7 +127,7 @@
         <div class="cap-card">
           <div class="cap-card__icon">🔍</div>
           <h3 data-i18n="cap1Title">Detect Listening Ports</h3>
-          <p data-i18n="cap1Desc">Powered by <code>lsof</code>, surfaces TCP LISTEN-state ports from your configured dev tools. Updated at your chosen refresh interval.</p>
+          <p data-i18n-html="cap1Desc">Powered by <code>lsof</code>, surfaces TCP LISTEN-state ports from your configured dev tools. Updated at your chosen refresh interval.</p>
         </div>
 
         <div class="cap-card">
@@ -139,7 +139,7 @@
         <div class="cap-card">
           <div class="cap-card__icon">🛡️</div>
           <h3 data-i18n="cap3Title">Scope Badge</h3>
-          <p data-i18n="cap3Desc">Each port shows <strong>local</strong> (localhost-only) or <strong>public</strong> (all interfaces) so you know your exposure at a glance.</p>
+          <p data-i18n-html="cap3Desc">Each port shows <strong>local</strong> (localhost-only) or <strong>public</strong> (all interfaces) so you know your exposure at a glance.</p>
         </div>
 
         <div class="cap-card">
@@ -157,7 +157,7 @@
         <div class="cap-card">
           <div class="cap-card__icon">🎯</div>
           <h3 data-i18n="cap6Title">Custom Ports &amp; Ranges</h3>
-          <p data-i18n="cap6Desc">Add individual port numbers or ranges (e.g. <code>9000–9010</code>) with per-entry validation. Flexible enough for any workflow.</p>
+          <p data-i18n-html="cap6Desc">Add individual port numbers or ranges (e.g. <code>9000–9010</code>) with per-entry validation. Flexible enough for any workflow.</p>
         </div>
 
       </div>
