@@ -1,0 +1,65 @@
+/* App */
+"app_title" = "Porta";
+
+/* ContentView — error / empty states */
+"error_detect_ports" = "Could not detect ports";
+"empty_no_presets_title" = "No ports are being monitored";
+"empty_no_match_title" = "No matching ports found";
+"empty_no_presets_desc" = "Enable at least one preset or add custom ports in Settings to start monitoring.";
+"empty_no_match_desc" = "No open LISTEN ports match your active filters. Try refreshing, updating your settings, or enable Monitor All Ports.";
+
+/* Scope badges */
+"badge_public" = "public";
+"badge_local" = "local";
+
+/* Tooltips — ContentView */
+"tooltip_refresh" = "Refresh port list";
+"tooltip_settings" = "Settings";
+"tooltip_quit" = "Quit Porta";
+"tooltip_kill_process" = "Kill process";
+"tooltip_activity_monitor_fmt" = "Open Activity Monitor — \"%@\" copied, press ⌘F and paste to find it";
+"help_public_scope" = "Bound to all interfaces (0.0.0.0) — other machines on your network can connect";
+"help_local_scope" = "Bound to localhost — accessible from this machine only";
+
+/* Alerts / dialogs */
+"alert_kill_failed_title" = "Could Not Kill Process";
+"dialog_kill_title" = "Kill Process?";
+"btn_ok" = "OK";
+"btn_kill" = "Kill";
+"kill_confirm_fmt" = "Terminate %1$@ (PID %2$d) on port %3$d?";
+
+/* Language toggle */
+"tooltip_switch_to_chinese" = "切换为中文";
+"tooltip_switch_to_english" = "Switch to English";
+
+/* Monitor-all toggle */
+"tooltip_monitor_all_off" = "Filters active — click to monitor all ports";
+"tooltip_monitor_all_on" = "Monitoring all ports — click to apply filters";
+"empty_monitor_all_title" = "No listening ports found";
+"empty_monitor_all_desc" = "All TCP ports are being monitored. Start a server and click ↻ to refresh.";
+
+/* Settings */
+"settings_title" = "Settings";
+"settings_presets" = "Port presets";
+"settings_custom_ports" = "Custom ports";
+"settings_refresh" = "Refresh";
+"settings_startup" = "Startup";
+"settings_port_placeholder" = "Port or range, e.g. 4200 or 9000–9010";
+"btn_add" = "Add";
+"toggle_open_at_login" = "Open at login";
+"tooltip_done" = "Done";
+"error_invalid_port_fmt" = "\"%@\" is not valid. Use a port (1–65535) or range like 9000–9010 (max 1000 ports).";
+"error_launch_at_login_fmt" = "Could not update launch-at-login setting: %@";
+
+/* KillResult errors */
+"kill_err_permission" = "Permission denied. Porta may need elevated privileges to kill this process.";
+"kill_err_not_found" = "The process was already gone.";
+"kill_err_port_gone" = "This process no longer owns the port. It may have already exited.";
+"kill_err_verify_fmt" = "Could not verify that this process still owns the port. %@";
+"kill_err_signal_fmt" = "Could not signal the process. %@";
+"kill_err_still_alive" = "Process survived SIGKILL and may require manual intervention.";
+
+/* DetectionError errors */
+"detect_err_launch_fmt" = "Could not run lsof. %@";
+"detect_err_lsof_fmt" = "lsof failed while detecting listening ports. %@";
+"detect_err_unreadable" = "Could not read lsof output.";

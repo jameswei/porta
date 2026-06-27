@@ -50,7 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 // with the .cursorUpdate option. Without this, macOS delivers cursor events to
 // whatever window is behind the popover on non-interactive areas.
 private final class PopoverContentViewController: NSViewController {
-    private let hosting = NSHostingController(rootView: ContentView())
+    private let hosting = NSHostingController(rootView: AnyView(ContentView().environmentObject(LanguageManager.shared)))
 
     override func loadView() {
         view = CursorCapturingView()

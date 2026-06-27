@@ -60,17 +60,17 @@ enum KillResult {
     var userMessage: String {
         switch self {
         case .permissionDenied:
-            return "Permission denied. Porta may need elevated privileges to kill this process."
+            return L("kill_err_permission")
         case .processNotFound:
-            return "The process was already gone."
+            return L("kill_err_not_found")
         case .portNoLongerOwned:
-            return "This process no longer owns the port. It may have already exited."
+            return L("kill_err_port_gone")
         case .ownershipVerificationFailed(let detail):
-            return "Could not verify that this process still owns the port. \(detail)"
+            return Lf("kill_err_verify_fmt", detail)
         case .signalFailed(let detail):
-            return "Could not signal the process. \(detail)"
+            return Lf("kill_err_signal_fmt", detail)
         case .stillAliveAfterKill:
-            return "Process survived SIGKILL and may require manual intervention."
+            return L("kill_err_still_alive")
         }
     }
 }
@@ -85,11 +85,11 @@ enum DetectionError: Error {
     var userMessage: String {
         switch self {
         case .launchFailed(let detail):
-            return "Could not run lsof. \(detail)"
+            return Lf("detect_err_launch_fmt", detail)
         case .lsofFailed(let detail):
-            return "lsof failed while detecting listening ports. \(detail)"
+            return Lf("detect_err_lsof_fmt", detail)
         case .unreadableOutput:
-            return "Could not read lsof output."
+            return L("detect_err_unreadable")
         }
     }
 }
@@ -156,6 +156,10 @@ class PortSettings: ObservableObject {
         didSet { save() }
     }
 
+    @Published var monitorAllPorts: Bool {
+        didSet { save() }
+    }
+
     private init() {
         if let saved = defaults.stringArray(forKey: "enabledPresetKeys") {
             enabledPresetKeys = Set(saved)
@@ -165,12 +169,14 @@ class PortSettings: ObservableObject {
         customPortsInput = defaults.string(forKey: "customPortsInput") ?? ""
         let savedInterval = defaults.object(forKey: "refreshIntervalSeconds") as? Int ?? 5
         refreshIntervalSeconds = Self.allowedRefreshIntervals.min(by: { abs($0 - savedInterval) < abs($1 - savedInterval) }) ?? 5
+        monitorAllPorts = defaults.bool(forKey: "monitorAllPorts")
     }
 
     private func save() {
         defaults.set(Array(enabledPresetKeys), forKey: "enabledPresetKeys")
         defaults.set(customPortsInput, forKey: "customPortsInput")
         defaults.set(refreshIntervalSeconds, forKey: "refreshIntervalSeconds")
+        defaults.set(monitorAllPorts, forKey: "monitorAllPorts")
     }
 
     var activePorts: Set<Int> {

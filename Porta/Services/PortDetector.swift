@@ -20,6 +20,13 @@ class PortDetector: ObservableObject {
                 self?.restartMonitoringTimer()
             }
             .store(in: &cancellables)
+
+        settings.$monitorAllPorts
+            .dropFirst()
+            .sink { [weak self] _ in
+                self?.refresh()
+            }
+            .store(in: &cancellables)
     }
 
     func startMonitoring() {
@@ -174,6 +181,25 @@ class PortDetector: ObservableObject {
         }
     }
 
+    // Well-known macOS system daemons that open TCP LISTEN ports — hidden from the port list
+    // because they are not user-launched processes and cannot safely be killed.
+    private static let systemProcessNames: Set<String> = [
+        "ControlCenter",       // AirPlay Receiver (:5000, :7000)
+        "AirPlayXPCHelper",    // AirPlay streaming
+        "sharingd",            // File sharing / Bonjour
+        "rapportd",            // Handoff / Continuity
+        "screensharingd",      // Screen sharing (VNC)
+        "RemoteManagement",    // Apple Remote Desktop
+        "universalaccessd",    // Accessibility services
+        "UserEventAgent",      // System event daemon
+        "launchd",             // Root launch daemon (pid 1)
+        "logd",                // Unified logging daemon
+        "configd",             // Network configuration daemon
+        "mDNSResponder",       // Bonjour / mDNS
+        "distnoted",           // Distributed notifications daemon
+        "syslogd",             // System logging daemon
+    ]
+
     private func detectOpenPorts(filter: Set<Int>) -> Result<[OpenPort], DetectionError> {
         // -F pcPtn: machine-readable output (p=pid, c=command, P=protocol, t=type, n=name/address)
         // lsof always emits 'f<fd>' as a per-file separator in -F mode
@@ -189,7 +215,9 @@ class PortDetector: ObservableObject {
             return .failure(.lsofFailed(lsofResult.errorOutput))
         }
 
-        let coalesced = coalesceOpenPorts(parseLsofMachineOutput(lsofResult.output, filter: filter))
+        let effectiveFilter: Set<Int>? = settings.monitorAllPorts ? nil : filter
+        let coalesced = coalesceOpenPorts(parseLsofMachineOutput(lsofResult.output, filter: effectiveFilter))
+            .filter { !Self.systemProcessNames.contains($0.processName) }
         return .success(coalesced.map { port in
             var p = port
             p.startTime = processStartTime(pid: port.pid)
@@ -235,7 +263,7 @@ class PortDetector: ObservableObject {
     ///   t<type>       – file type, e.g. IPv4 or IPv6
     ///   f<fd>         – file-descriptor separator (always emitted, ignored here)
     ///   n<addr:port>  – network name field → emit OpenPort if port is in filter
-    func parseLsofMachineOutput(_ output: String, filter: Set<Int>) -> [OpenPort] {
+    func parseLsofMachineOutput(_ output: String, filter: Set<Int>?) -> [OpenPort] {
         var result: [OpenPort] = []
         var currentPID = 0
         var currentCommand = ""
@@ -261,7 +289,7 @@ class PortDetector: ObservableObject {
             case "n":
                 guard currentPID > 0,
                       let (address, port) = parseNameField(value),
-                      filter.contains(port),
+                      filter?.contains(port) ?? true,
                       !result.contains(where: {
                           $0.number == port &&
                           $0.pid == currentPID &&

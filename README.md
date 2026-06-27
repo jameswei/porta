@@ -25,10 +25,12 @@ When AI coding agents (or any dev tool) leave processes running after a session 
 - **Kill with one click** — SIGTERM → 2 s wait → SIGKILL, with confirmation dialog and ownership re-check before signaling
 - **Scope badge** — each port shows `local` (localhost-only) or `public` (all interfaces) so you know your exposure at a glance
 - **Relative uptime** — see how long the process has been running ("5h ago", "2 min ago")
+- **Monitor All Ports** — toggle in the footer to bypass filters and see every TCP LISTEN port instantly; macOS system daemons (ControlCenter, mDNSResponder, etc.) are always hidden
 - **Configurable presets** — toggle by tool category: Node.js/npm, Vite/Webpack, Python, Ruby/Rails, Go, Java/Spring, PostgreSQL, MySQL, Redis, MongoDB, Common Dev
 - **Custom ports** — add individual port numbers or ranges (e.g. `9000–9010`) with per-entry validation
 - **Adjustable refresh** — 1 s, 3 s, 5 s, 10 s, 30 s, or 60 s polling interval
 - **Launch at login** — stay ready in the background via `SMAppService`
+- **English / Simplified Chinese** — switch language in-app (header translate button) independently of your OS locale; choice is remembered across sessions
 - **Lightweight** — menu-bar only, no Dock icon, near-zero CPU/memory, no third-party dependencies
 
 ## Prerequisites
@@ -72,8 +74,10 @@ open /path/to/Porta.app
 2. Each card shows: port number + scope badge, process name, PID, and relative start time
 3. Click the magnifying glass to open Activity Monitor (process name is copied to clipboard — press **⌘F** and paste to find it)
 4. Click **✕** to kill the owning process (confirmation required)
-5. Click **⚙** (bottom-left) to open Settings: toggle presets, add custom ports, set refresh rate, enable launch at login
-6. Click **⏻** or press **⌘Q** to quit
+5. Click the filter icon (bottom-center) to toggle **Monitor All Ports** — bypasses your preset/custom filters and shows every TCP listener
+6. Click **⚙** (bottom-left) to open Settings: toggle presets, add custom ports, set refresh rate, enable launch at login; the app version is shown at the bottom of Settings
+7. Click the **translate** icon (top-right) to switch between English and Simplified Chinese
+8. Click **⏻** or press **⌘Q** to quit
 
 ## Architecture
 

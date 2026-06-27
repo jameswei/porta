@@ -4,38 +4,50 @@ import AppKit
 struct ContentView: View {
     @StateObject var portDetector = PortDetector()
     @StateObject private var settings = PortSettings.shared
+    @EnvironmentObject var lm: LanguageManager
     @State private var showingSettings = false
+    @FocusState private var refreshFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Porta")
+                Text(verbatim: L("app_title"))
                     .font(.headline)
                 Spacer()
+                Button(action: {
+                    lm.language = lm.language == "en" ? "zh-Hans" : "en"
+                }) {
+                    Image(systemName: "translate")
+                }
+                .buttonStyle(.plain)
+                .help(lm.language == "en"
+                    ? L("tooltip_switch_to_chinese")
+                    : L("tooltip_switch_to_english"))
                 Button(action: { portDetector.refresh() }) {
                     Image(systemName: "arrow.clockwise")
                 }
-                .help("Refresh port list")
+                .focused($refreshFocused)
+                .help(L("tooltip_refresh"))
             }
             .padding(.bottom, 8)
 
             if let detectionError = portDetector.detectionError {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Could not detect ports")
+                    Text(verbatim: L("error_detect_ports"))
                         .font(.caption)
                         .fontWeight(.semibold)
-                    Text(detectionError.userMessage)
+                    Text(verbatim: detectionError.userMessage)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 .padding(12)
             } else if portDetector.ports.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(emptyStateTitle)
+                    Text(verbatim: emptyStateTitle)
                         .foregroundColor(.secondary)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                    Text(emptyStateDescription)
+                    Text(verbatim: emptyStateDescription)
                         .foregroundColor(.secondary)
                         .font(.caption)
                         .fixedSize(horizontal: false, vertical: true)
@@ -69,20 +81,30 @@ struct ContentView: View {
                 Button(action: { showingSettings = true }) {
                     Image(systemName: "gearshape")
                 }
-                .help("Settings")
+                .help(L("tooltip_settings"))
                 Spacer()
+                Button(action: { settings.monitorAllPorts.toggle() }) {
+                    Image(systemName: settings.monitorAllPorts
+                        ? "line.3.horizontal.decrease.circle.fill"
+                        : "line.3.horizontal.decrease.circle")
+                    .foregroundColor(settings.monitorAllPorts ? .accentColor : .secondary)
+                }
+                .help(settings.monitorAllPorts
+                    ? L("tooltip_monitor_all_on")
+                    : L("tooltip_monitor_all_off"))
                 Button(action: { NSApplication.shared.terminate(nil) }) {
                     Image(systemName: "power")
                 }
                 .keyboardShortcut("q", modifiers: .command)
-                .help("Quit Porta")
+                .help(L("tooltip_quit"))
             }
             .padding(.top, 8)
         }
         .padding(12)
-        .frame(minWidth: 320)
+        .frame(width: 340)
         .onAppear {
             portDetector.startMonitoring()
+            refreshFocused = true
         }
         .onChange(of: showingSettings) { isPresented in
             if !isPresented {
@@ -91,30 +113,33 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView(settings: settings)
+                .environmentObject(lm)
         }
         .alert(
-            "Could Not Kill Process",
+            L("alert_kill_failed_title"),
             isPresented: Binding(
                 get: { portDetector.lastKillError != nil },
                 set: { if !$0 { portDetector.lastKillError = nil } }
             )
         ) {
-            Button("OK") { portDetector.lastKillError = nil }
+            Button(L("btn_ok")) { portDetector.lastKillError = nil }
         } message: {
-            Text(portDetector.lastKillError?.userMessage ?? "")
+            Text(verbatim: portDetector.lastKillError?.userMessage ?? "")
         }
     }
 
     private var emptyStateTitle: String {
-        settings.activePorts.isEmpty
-            ? "No ports are being monitored"
-            : "No matching ports found"
+        if settings.monitorAllPorts { return L("empty_monitor_all_title") }
+        return settings.activePorts.isEmpty
+            ? L("empty_no_presets_title")
+            : L("empty_no_match_title")
     }
 
     private var emptyStateDescription: String {
-        settings.activePorts.isEmpty
-            ? "Enable at least one preset or add custom ports in Settings to start monitoring."
-            : "No open LISTEN ports match your active filters. Try refreshing or updating your settings."
+        if settings.monitorAllPorts { return L("empty_monitor_all_desc") }
+        return settings.activePorts.isEmpty
+            ? L("empty_no_presets_desc")
+            : L("empty_no_match_desc")
     }
 
     private var portListHeight: CGFloat {
@@ -125,6 +150,7 @@ struct ContentView: View {
 struct PortRowView: View {
     let port: OpenPort
     let onKill: () -> Void
+    @EnvironmentObject var lm: LanguageManager
     @State private var showConfirmation = false
 
     private static let relativeFormatter: RelativeDateTimeFormatter = {
@@ -181,7 +207,7 @@ struct PortRowView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .help("Open Activity Monitor — \"\(port.processName)\" copied, press ⌘F and paste to find it")
+                .help(Lf("tooltip_activity_monitor_fmt", port.processName))
 
                 Button(action: { showConfirmation = true }) {
                     Image(systemName: "xmark.circle.fill")
@@ -190,15 +216,15 @@ struct PortRowView: View {
                         .frame(width: 28, height: 28)
                         .contentShape(Rectangle())
                 }
-                .help("Kill process")
+                .help(L("tooltip_kill_process"))
                 .buttonStyle(.plain)
                 .confirmationDialog(
-                    "Kill Process?",
+                    L("dialog_kill_title"),
                     isPresented: $showConfirmation
                 ) {
-                    Button("Kill", role: .destructive) { onKill() }
+                    Button(L("btn_kill"), role: .destructive) { onKill() }
                 } message: {
-                    Text(verbatim: "Terminate \(port.processName) (PID \(port.pid)) on port \(port.number)?")
+                    Text(verbatim: Lf("kill_confirm_fmt", port.processName, port.pid, port.number))
                 }
             }
         }
@@ -209,7 +235,7 @@ struct PortRowView: View {
 
     private var scopeBadge: some View {
         let isPublic = !port.isLocalhostOnly
-        return Text(isPublic ? "public" : "local")
+        return Text(verbatim: L(isPublic ? "badge_public" : "badge_local"))
             .font(.caption2)
             .fontWeight(.medium)
             .padding(.horizontal, 6)
@@ -218,12 +244,13 @@ struct PortRowView: View {
             .foregroundColor(isPublic ? .orange : .secondary)
             .clipShape(Capsule())
             .help(isPublic
-                ? "Bound to all interfaces (0.0.0.0) — other machines on your network can connect"
-                : "Bound to localhost — accessible from this machine only"
+                ? L("help_public_scope")
+                : L("help_local_scope")
             )
     }
 }
 
 #Preview {
     ContentView()
+        .environmentObject(LanguageManager.shared)
 }

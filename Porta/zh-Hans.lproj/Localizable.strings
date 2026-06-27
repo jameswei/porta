@@ -1,0 +1,65 @@
+/* App */
+"app_title" = "Porta";
+
+/* ContentView — error / empty states */
+"error_detect_ports" = "无法检测端口";
+"empty_no_presets_title" = "未监控任何端口";
+"empty_no_match_title" = "未找到匹配端口";
+"empty_no_presets_desc" = "请在设置中启用至少一个预设或添加自定义端口以开始监控。";
+"empty_no_match_desc" = "当前过滤条件下没有处于监听状态的端口，请尝试刷新、更新设置，或启用「监控所有端口」。";
+
+/* Scope badges */
+"badge_public" = "公网";
+"badge_local" = "本地";
+
+/* Tooltips — ContentView */
+"tooltip_refresh" = "刷新端口列表";
+"tooltip_settings" = "设置";
+"tooltip_quit" = "退出 Porta";
+"tooltip_kill_process" = "终止进程";
+"tooltip_activity_monitor_fmt" = "打开活动监视器——\"%@\"已复制，按 ⌘F 粘贴以查找";
+"help_public_scope" = "绑定所有接口 (0.0.0.0) — 网络上其他机器可以连接";
+"help_local_scope" = "绑定本机 — 仅限本机访问";
+
+/* Alerts / dialogs */
+"alert_kill_failed_title" = "无法终止进程";
+"dialog_kill_title" = "终止进程？";
+"btn_ok" = "好";
+"btn_kill" = "终止";
+"kill_confirm_fmt" = "终止端口 %3$d 上的进程 %1$@（PID %2$d）？";
+
+/* Language toggle */
+"tooltip_switch_to_chinese" = "切换为中文";
+"tooltip_switch_to_english" = "Switch to English";
+
+/* Monitor-all toggle */
+"tooltip_monitor_all_off" = "过滤器已启用 — 点击以监控所有端口";
+"tooltip_monitor_all_on" = "正在监控所有端口 — 点击以启用过滤器";
+"empty_monitor_all_title" = "未发现监听端口";
+"empty_monitor_all_desc" = "正在监控所有 TCP 端口。启动服务器后点击 ↻ 刷新。";
+
+/* Settings */
+"settings_title" = "设置";
+"settings_presets" = "端口预设";
+"settings_custom_ports" = "自定义端口";
+"settings_refresh" = "刷新间隔";
+"settings_startup" = "启动";
+"settings_port_placeholder" = "端口或范围，如 4200 或 9000–9010";
+"btn_add" = "添加";
+"toggle_open_at_login" = "登录时启动";
+"tooltip_done" = "完成";
+"error_invalid_port_fmt" = "\"%@\"无效。请输入端口号 (1–65535) 或范围，如 9000–9010（最多 1000 个端口）。";
+"error_launch_at_login_fmt" = "无法更新登录时启动设置：%@";
+
+/* KillResult errors */
+"kill_err_permission" = "权限被拒绝。Porta 可能需要更高权限才能终止此进程。";
+"kill_err_not_found" = "进程已不存在。";
+"kill_err_port_gone" = "该进程已不再占用此端口，可能已退出。";
+"kill_err_verify_fmt" = "无法验证该进程是否仍占用此端口。%@";
+"kill_err_signal_fmt" = "无法向进程发送信号。%@";
+"kill_err_still_alive" = "进程在 SIGKILL 后仍存活，可能需要手动处理。";
+
+/* DetectionError errors */
+"detect_err_launch_fmt" = "无法运行 lsof。%@";
+"detect_err_lsof_fmt" = "检测监听端口时 lsof 运行失败。%@";
+"detect_err_unreadable" = "无法读取 lsof 输出。";

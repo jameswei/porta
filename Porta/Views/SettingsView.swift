@@ -3,6 +3,7 @@ import ServiceManagement
 
 struct SettingsView: View {
     @ObservedObject var settings: PortSettings
+    @EnvironmentObject var lm: LanguageManager
     @Environment(\.dismiss) private var dismiss
 
     @State private var launchAtLoginEnabled = false
@@ -14,10 +15,10 @@ struct SettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Settings")
+            Text(verbatim: L("settings_title"))
                 .font(.headline)
 
-            Text("Port presets")
+            Text(verbatim: L("settings_presets"))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
@@ -36,7 +37,7 @@ struct SettingsView: View {
 
             Divider()
 
-            Text("Custom ports")
+            Text(verbatim: L("settings_custom_ports"))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
@@ -64,16 +65,16 @@ struct SettingsView: View {
             }
 
             HStack(spacing: 8) {
-                TextField("Port or range, e.g. 4200 or 9000–9010", text: $newEntryInput)
+                TextField(L("settings_port_placeholder"), text: $newEntryInput)
                     .textFieldStyle(.roundedBorder)
                     .onSubmit { tryAddEntry() }
                     .onChange(of: newEntryInput) { _ in newEntryError = nil }
-                Button("Add") { tryAddEntry() }
+                Button(L("btn_add")) { tryAddEntry() }
                     .disabled(newEntryInput.trimmingCharacters(in: .whitespaces).isEmpty)
             }
 
             if let error = newEntryError {
-                Text(error)
+                Text(verbatim: error)
                     .font(.caption)
                     .foregroundColor(.red)
                     .fixedSize(horizontal: false, vertical: true)
@@ -81,7 +82,7 @@ struct SettingsView: View {
 
             Divider()
 
-            Text("Refresh")
+            Text(verbatim: L("settings_refresh"))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
@@ -96,18 +97,18 @@ struct SettingsView: View {
 
             Divider()
 
-            Text("Startup")
+            Text(verbatim: L("settings_startup"))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
-            Toggle("Open at login", isOn: Binding(
+            Toggle(L("toggle_open_at_login"), isOn: Binding(
                 get: { launchAtLoginEnabled },
                 set: { applyLaunchAtLoginChange(enabled: $0) }
             ))
             .disabled(isUpdatingLaunchAtLogin)
 
             if let message = launchAtLoginError {
-                Text(message)
+                Text(verbatim: message)
                     .font(.caption)
                     .foregroundColor(.red)
                     .fixedSize(horizontal: false, vertical: true)
@@ -115,12 +116,17 @@ struct SettingsView: View {
 
             Divider()
 
-            Button(action: { dismiss() }) {
-                Image(systemName: "checkmark.circle")
-                    .imageScale(.large)
+            HStack {
+                Button(action: { dismiss() }) {
+                    Image(systemName: "checkmark.circle")
+                        .imageScale(.large)
+                }
+                .help(L("tooltip_done"))
+                Spacer()
+                Text(verbatim: appVersionString)
+                    .font(.caption2)
+                    .foregroundColor(.secondary.opacity(0.6))
             }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-            .help("Done")
         }
         .padding()
         .frame(width: 360)
@@ -137,7 +143,7 @@ struct SettingsView: View {
             newEntryInput = ""
             newEntryError = nil
         } else {
-            newEntryError = "\"\(trimmed)\" is not valid. Use a port (1–65535) or range like 9000–9010 (max 1000 ports)."
+            newEntryError = Lf("error_invalid_port_fmt", trimmed)
         }
     }
 
@@ -154,6 +160,12 @@ struct SettingsView: View {
                 settings.enabledPresetKeys = updated
             }
         )
+    }
+
+    private var appVersionString: String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"
+        return "Porta v\(version) (\(build))"
     }
 
     private func refreshLaunchAtLoginState(clearError: Bool = true) {
@@ -175,7 +187,7 @@ struct SettingsView: View {
                     try await SMAppService.mainApp.unregister()
                 }
             } catch {
-                updateError = "Could not update launch-at-login setting: \(error.localizedDescription)"
+                updateError = Lf("error_launch_at_login_fmt", error.localizedDescription)
             }
 
             await MainActor.run {
@@ -190,5 +202,6 @@ struct SettingsView: View {
 #if DEBUG
 #Preview {
     SettingsView(settings: .shared)
+        .environmentObject(LanguageManager.shared)
 }
 #endif
