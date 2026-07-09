@@ -1,5 +1,7 @@
 # Porta
 
+[![CI](https://github.com/jameswei/porta/actions/workflows/ci.yml/badge.svg)](https://github.com/jameswei/porta/actions/workflows/ci.yml)
+
 **Project site:** https://jameswei.github.io/porta/ · [简体中文](./README.zh-CN.md)
 
 > A lightweight macOS menu-bar app that surfaces and kills orphan listening ports left by coding agents.
