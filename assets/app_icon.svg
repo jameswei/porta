@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6C7CFF"/>
+      <stop offset="0.55" stop-color="#3F5DE6"/>
+      <stop offset="1" stop-color="#2348C8"/>
+    </linearGradient>
+    <linearGradient id="highlight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.24"/>
+      <stop offset="0.48" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="tileShadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="28" stdDeviation="30" flood-color="#13245E" flood-opacity="0.32"/>
+    </filter>
+    <filter id="glyphShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#10276F" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <rect x="100" y="76" width="824" height="824" rx="188"
+        fill="url(#background)" filter="url(#tileShadow)"/>
+  <rect x="101" y="77" width="822" height="822" rx="187"
+        fill="url(#highlight)"/>
+  <rect x="119" y="95" width="786" height="786" rx="169"
+        fill="none" stroke="#FFFFFF" stroke-opacity="0.13" stroke-width="4"/>
+
+  <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"
+     filter="url(#glyphShadow)">
+    <path d="M290 334 H734 Q762 334 762 362 V592 Q762 620 734 620 H678 V678 H620 V736 H404 V678 H346 V620 H290 Q262 620 262 592 V362 Q262 334 290 334 Z"
+          stroke-width="42"/>
+    <path d="M374 424 V492 M443 424 V492 M512 424 V492 M581 424 V492 M650 424 V492"
+          stroke-width="32"/>
+  </g>
+</svg>

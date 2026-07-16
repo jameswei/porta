@@ -169,6 +169,10 @@ struct PortRowView: View {
                         .textSelection(.enabled)
 
                     scopeBadge
+
+                    if let startTime = port.startTime {
+                        ageBadge(startTime: startTime)
+                    }
                 }
 
                 HStack(spacing: 6) {
@@ -180,17 +184,9 @@ struct PortRowView: View {
                     Text(verbatim: "PID \(port.pid)")
                         .font(.caption)
                         .foregroundColor(.secondary.opacity(0.6))
-
-                    if let startTime = port.startTime {
-                        Spacer()
-                        Text(Self.relativeFormatter.localizedString(for: startTime, relativeTo: Date()))
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
                 }
             }
-
-            Spacer()
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: 2) {
                 Button {
@@ -247,6 +243,30 @@ struct PortRowView: View {
                 ? L("help_public_scope")
                 : L("help_local_scope")
             )
+    }
+
+    private func ageBadge(startTime: Date) -> some View {
+        let age = max(0, Date().timeIntervalSince(startTime))
+        let oneDay: TimeInterval = 24 * 60 * 60
+        let color: Color
+
+        if age < oneDay {
+            color = .green
+        } else if age < 3 * oneDay {
+            color = .orange
+        } else {
+            color = .red
+        }
+
+        return Text(Self.relativeFormatter.localizedString(for: startTime, relativeTo: Date()))
+            .font(.caption2)
+            .fontWeight(.medium)
+            .lineLimit(1)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(color.opacity(0.12))
+            .foregroundColor(color)
+            .clipShape(Capsule())
     }
 }
 
