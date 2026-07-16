@@ -3,13 +3,26 @@
 All notable changes to Porta are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.0] - 2026-07-16
+
+### Added
+
+- **Dedicated macOS app icon** — a native Porta identity for Finder, Applications, Activity Monitor, and other system app lists
+- **Color-coded process-age pills** — green for processes under 24 hours, amber from 1 day to under 3 days, and red from 3 days onward
+- **Automatic Light/Dark appearance** — the popover and Settings follow the current macOS appearance whenever Porta opens
+
+### Changed
+
+- Process age now sits beside the `local` / `public` scope badge, while the inspect and kill actions remain vertically centered
+- README and project landing page now describe Porta as a general listening-port manager, use the real app icon, and show current Light/Dark screenshots
+
 ## [1.1.0] - 2026-06-27
 
 ### Added
 
 - **Simplified Chinese support** — in-app language switch via the translate icon in the header; preference is remembered across sessions, independent of OS locale
 - **Monitor All Ports toggle** — footer filter icon bypasses all preset and custom filters, showing every TCP LISTEN port instantly; macOS system daemons are always excluded
-- **Smart system daemon exclusion** — 14 known macOS system processes (ControlCenter, mDNSResponder, rapportd, and more) are always hidden, keeping the list focused on dev processes
+- **Smart system daemon exclusion** — 14 known macOS system processes (ControlCenter, mDNSResponder, rapportd, and more) are always hidden, keeping the list focused on non-system listeners
 - **App version** shown in the Settings footer
 - Architecture documentation (`docs/architecture.md`)
 - Project landing page (<https://jameswei.github.io/porta/>)

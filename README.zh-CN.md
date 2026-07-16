@@ -2,36 +2,44 @@
 
 **项目主页：** https://jameswei.github.io/porta/ · [English](./README.md)
 
-> 一款轻量级 macOS 菜单栏应用，用于检测并关闭编码工具遗留的孤儿监听端口。
+<p align="center">
+  <img src="assets/app_icon.svg" width="112" alt="Porta 应用图标" />
+</p>
 
-当 AI 编码工具（或任何开发工具）在会话结束后遗留进程时，这些进程仍会持续占用 TCP 端口。Porta 驻留在菜单栏，展示所有匹配的 LISTEN 状态端口，让你一键关闭对应进程。
+> 一款轻量级 macOS 菜单栏应用，用于查看和管理 TCP 监听端口。
+
+Web 服务器、数据库、后台工具和桌面应用都可能持续占用 TCP 端口。Porta 驻留在菜单栏，展示匹配的 LISTEN 状态端口、所属进程、暴露范围和进程运行时长，并让你一键检查或停止对应进程。
 
 ## 截图
 
 <table>
   <tr>
-    <td><img src="assets/screenshot_main.png" width="340" alt="端口列表 — 暴露范围标识、进程名称、PID、相对运行时间"/></td>
-    <td><img src="assets/screenshot_settings.png" width="260" alt="设置 — 端口预设、自定义端口、刷新间隔、开机自启"/></td>
+    <td><img src="assets/screenshot_main.png" width="300" alt="浅色外观端口列表 — 暴露范围与进程时长标识、进程名称和 PID"/></td>
+    <td><img src="assets/screenshot_main_dark.png" width="300" alt="深色外观端口列表 — 暴露范围与进程时长标识、进程名称和 PID"/></td>
+    <td><img src="assets/screenshot_settings.png" width="230" alt="设置 — 端口预设、自定义端口、刷新间隔和开机自启"/></td>
   </tr>
   <tr>
-    <td align="center"><em>端口列表</em></td>
+    <td align="center"><em>端口列表 · 浅色</em></td>
+    <td align="center"><em>端口列表 · 深色</em></td>
     <td align="center"><em>设置</em></td>
   </tr>
 </table>
 
 ## 功能特性
 
-- **检测监听端口** — 由 `lsof` 驱动，展示已配置开发工具中的 TCP LISTEN 状态端口
+- **检测监听端口** — 由 `lsof` 驱动，展示匹配的 TCP LISTEN 状态端口及其所属进程
 - **一键终止** — SIGTERM → 等待 2 秒 → SIGKILL，终止前弹出确认对话框并重新验证进程归属
 - **暴露范围标识** — 每个端口显示 `local`（仅本机）或 `public`（所有接口），一眼看清暴露范围
-- **相对运行时间** — 显示进程已运行时长（"5h ago"、"2 min ago"）
+- **彩色进程时长标识** — 紧凑标签帮助快速判断：24 小时内为绿色、1 天至不足 3 天为琥珀色、3 天及以上为红色
+- **活动监视器快捷入口** — 从任意端口行打开活动监视器，并自动复制进程名称以便快速查找
 - **监控所有端口** — 底栏过滤图标一键切换，跳过所有预设和自定义过滤器，立即显示全部 TCP 监听端口；macOS 系统守护进程（ControlCenter、mDNSResponder 等）始终被隐藏
 - **可配置预设** — 按工具类别开关：Node.js/npm、Vite/Webpack、Python、Ruby/Rails、Go、Java/Spring、PostgreSQL、MySQL、Redis、MongoDB、Common Dev
 - **自定义端口** — 添加单个端口号或端口范围（如 `9000–9010`），每条记录独立校验
 - **可调刷新间隔** — 1 秒、3 秒、5 秒、10 秒、30 秒或 60 秒
 - **开机自启** — 通过 `SMAppService` 在后台保持就绪
+- **自动外观** — 自动跟随 macOS 的浅色、深色和自动外观，无需单独设置主题
 - **英文 / 简体中文** — 在应用内切换语言（标题栏翻译按钮），独立于系统语言设置；语言偏好跨会话保留
-- **轻量** — 仅驻留菜单栏，无 Dock 图标，CPU/内存占用接近零，无第三方依赖
+- **原生且轻量** — 专属 macOS 应用图标，仅驻留菜单栏，无 Dock 图标，CPU/内存占用接近零，无第三方依赖
 
 ## 环境要求
 
@@ -71,7 +79,7 @@ open /path/to/Porta.app
 ## 使用方法
 
 1. 点击菜单栏中的插头图标，打开端口列表
-2. 每张卡片显示：端口号 + 范围标识、进程名称、PID 和相对启动时间
+2. 每行显示端口号、暴露范围、彩色进程时长、进程名称和 PID
 3. 点击放大镜图标打开活动监视器（进程名称已复制到剪贴板 — 按 **⌘F** 粘贴查找）
 4. 点击 **✕** 终止对应进程（需确认）
 5. 点击底栏中央的过滤图标，切换**监控所有端口**模式 — 跳过预设/自定义过滤器，显示所有 TCP 监听端口
@@ -87,6 +95,7 @@ open /path/to/Porta.app
 
 | 版本 | 日期 | 主要内容 |
 |------|------|---------|
+| [v1.2.0](./CHANGELOG.md#120---2026-07-16) | 2026-07-16 | 专属应用图标、彩色进程时长标识、自动浅色/深色外观 |
 | [v1.1.0](./CHANGELOG.md#110---2026-06-27) | 2026-06-27 | 内置简体中文、监控所有端口切换、系统进程自动屏蔽 |
 | [v1.0.0](./CHANGELOG.md#100---2026-06-26) | 2026-06-26 | 首次发布 — 范围标识、相对运行时间、预设、自定义端口、28 个单元测试 |
 

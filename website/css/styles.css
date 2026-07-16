@@ -209,6 +209,21 @@ h2 {
 
 .hero__inner { max-width: 720px; margin: 0 auto; }
 
+.hero__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hero__app-icon {
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 10px 16px rgba(30, 64, 175, .18));
+}
+
 .hero__badge {
   display: inline-block;
   font-size: .78rem;
@@ -229,7 +244,7 @@ h2 {
   letter-spacing: -.03em;
   line-height: 1;
   color: var(--color-text);
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 .hero__tagline {
@@ -328,9 +343,10 @@ h2 {
 @media (min-width: 760px) {
   .screenshots-grid {
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
-    gap: 3.5rem;
+    gap: 3rem 2rem;
   }
 }
 
@@ -340,6 +356,7 @@ h2 {
 }
 
 .screenshot-card--main     { max-width: 340px; width: 100%; }
+.screenshot-card--main-dark { max-width: 340px; width: 100%; }
 .screenshot-card--settings { max-width: 260px; width: 100%; }
 
 .screenshot-card__frame {
@@ -585,4 +602,6 @@ h2 {
 @media (max-width: 640px) {
   .nav__links { display: none; }
   .nav__actions .btn--outline { display: none; }
+  .hero__brand { gap: .75rem; }
+  .hero__app-icon { width: 72px; height: 72px; }
 }

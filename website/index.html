@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n-html="pageTitle">Porta — Kill orphan dev ports</title>
-  <meta name="description" content="A lightweight macOS menu-bar app that finds and kills orphan dev-server ports left by coding agents." />
+  <title data-i18n-html="pageTitle">Porta — Manage listening ports on macOS</title>
+  <meta name="description" content="A lightweight macOS menu-bar app for inspecting and stopping TCP listening ports, with scope and process-age indicators." />
+  <link rel="icon" type="image/svg+xml" href="assets/app_icon.svg" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -13,7 +14,7 @@
   <header class="nav">
     <div class="container nav__inner">
       <a href="#" class="nav__logo">
-        <img src="https://cdn-icons-png.flaticon.com/512/5022/5022090.png" alt="Porta icon" class="nav__logo-icon" />
+        <img src="assets/app_icon.svg" alt="Porta icon" class="nav__logo-icon" />
         <span class="nav__logo-text">Porta</span>
       </a>
       <nav class="nav__links">
@@ -34,12 +35,15 @@
   <section class="hero">
     <div class="container hero__inner">
       <div class="hero__badge" data-i18n="heroBadge">macOS 13+ · Zero Dependencies · Free</div>
-      <h1 class="hero__title">Porta</h1>
+      <div class="hero__brand">
+        <img src="assets/app_icon.svg" alt="Porta app icon" class="hero__app-icon" />
+        <h1 class="hero__title">Porta</h1>
+      </div>
       <p class="hero__tagline" data-i18n-html="heroTagline">
-        Surfaces and kills orphan listening ports<br class="br-desktop" /> left by coding agents.
+        See and manage listening ports<br class="br-desktop" /> right from your menu bar.
       </p>
       <p class="hero__sub" data-i18n="heroSub">
-        When AI coding agents (or any dev tool) leave processes running after a session ends, those processes keep holding TCP ports. Porta sits in your menu bar and lets you clean them up with one click.
+        Porta shows the process behind each TCP listener, how it is exposed, and how long it has been running. Inspect it in Activity Monitor or stop it safely in one click.
       </p>
       <div class="hero__cta">
         <a href="https://github.com/jameswei/porta" class="btn btn--primary" target="_blank" rel="noopener" data-i18n="heroCtaPrimary">View on GitHub</a>
@@ -54,7 +58,7 @@
       <h2 data-i18n="aboutTitle">Why Porta?</h2>
       <div class="about__body">
         <p data-i18n="aboutP1">
-          When AI coding agents (or any dev tool) leave processes running after a session ends, those processes keep holding TCP ports. Over time, these orphaned processes accumulate, consuming ports and system resources silently in the background.
+          Web servers, databases, background jobs, and desktop apps can all open TCP ports. When a listener is forgotten or causes a conflict, finding its owning process should not require a trip through the terminal.
         </p>
         <p data-i18n-html="aboutP2">
           Porta sits quietly in your macOS menu bar, continuously running <code>lsof -iTCP -sTCP:LISTEN</code> on a configurable timer. Separate IPv4 and IPv6 entries for the same process are coalesced into a single row — no duplicates, no noise. Just a clean list of what's running and a single click to stop it.
@@ -97,11 +101,20 @@
       <div class="screenshots-grid">
         <figure class="screenshot-card screenshot-card--main">
           <div class="screenshot-card__frame">
-            <img src="assets/screenshot_main.png" alt="Port list — scope badge, process name, PID, relative uptime" loading="lazy" />
+            <img src="assets/screenshot_main.png" alt="Port list in Light appearance — scope and color-coded process-age badges, process name, and PID" loading="lazy" />
           </div>
           <figcaption>
-            <strong data-i18n="screenshot1Title">Port List</strong>
-            <span data-i18n="screenshot1Desc">Scope badge, process name, PID, and relative uptime — all at a glance.</span>
+            <strong data-i18n="screenshot1Title">Port List · Light</strong>
+            <span data-i18n="screenshot1Desc">Scope, process age, process name, and PID — all at a glance.</span>
+          </figcaption>
+        </figure>
+        <figure class="screenshot-card screenshot-card--main-dark">
+          <div class="screenshot-card__frame">
+            <img src="assets/screenshot_main_dark.png" alt="Port list in Dark appearance — scope and color-coded process-age badges, process name, and PID" loading="lazy" />
+          </div>
+          <figcaption>
+            <strong data-i18n="screenshotDarkTitle">Port List · Dark</strong>
+            <span data-i18n="screenshotDarkDesc">Automatically follows the macOS Light, Dark, or Auto appearance.</span>
           </figcaption>
         </figure>
         <figure class="screenshot-card screenshot-card--settings">
@@ -121,13 +134,13 @@
   <section id="capabilities" class="capabilities">
     <div class="container">
       <h2 data-i18n="capTitle">Features</h2>
-      <p class="section-sub" data-i18n="capSub">Everything you need to stay on top of orphan ports.</p>
+      <p class="section-sub" data-i18n="capSub">Everything you need to understand and manage listening ports.</p>
       <div class="cap-grid">
 
         <div class="cap-card">
           <div class="cap-card__icon">🔍</div>
           <h3 data-i18n="cap1Title">Detect Listening Ports</h3>
-          <p data-i18n-html="cap1Desc">Powered by <code>lsof</code>, surfaces TCP LISTEN-state ports from your configured dev tools. Updated at your chosen refresh interval.</p>
+          <p data-i18n-html="cap1Desc">Powered by <code>lsof</code>, surfaces matching TCP LISTEN-state ports and their owning processes. Updated at your chosen refresh interval.</p>
         </div>
 
         <div class="cap-card">
@@ -144,8 +157,8 @@
 
         <div class="cap-card">
           <div class="cap-card__icon">⏱️</div>
-          <h3 data-i18n="cap4Title">Relative Uptime</h3>
-          <p data-i18n="cap4Desc">See how long each process has been running — "5h ago", "2 min ago" — to quickly spot stale servers.</p>
+          <h3 data-i18n="cap4Title">Color-Coded Process Age</h3>
+          <p data-i18n="cap4Desc">Age pills move from green to amber to red as a process runs longer, making potentially stale listeners easy to spot.</p>
         </div>
 
         <div class="cap-card">
@@ -173,9 +186,9 @@
         </div>
 
         <div class="cap-card">
-          <div class="cap-card__icon">🚫</div>
-          <h3 data-i18n="cap9Title">Smart System Exclusion</h3>
-          <p data-i18n="cap9Desc">14 known macOS system daemons (ControlCenter, mDNSResponder, rapportd, and more) are always hidden, keeping the list focused on your dev processes.</p>
+          <div class="cap-card__icon">◐</div>
+          <h3 data-i18n="cap9Title">Native macOS Experience</h3>
+          <p data-i18n="cap9Desc">A dedicated app icon, automatic Light/Dark appearance, launch at login, and a menu-bar-only design that stays out of your way.</p>
         </div>
 
       </div>
@@ -264,7 +277,6 @@
       </p>
       <nav class="footer__links">
         <a href="https://github.com/jameswei" target="_blank" rel="noopener" data-i18n="footerGithub">GitHub Profile</a>
-        <a href="https://www.linkedin.com/in/jamesweipek/" target="_blank" rel="noopener">LinkedIn</a>
         <a href="https://github.com/jameswei/porta" target="_blank" rel="noopener" data-i18n="footerRepo">Repository</a>
       </nav>
       <p class="footer__license" data-i18n="footerLicense">MIT License</p>

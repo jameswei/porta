@@ -4,36 +4,44 @@
 
 **Project site:** https://jameswei.github.io/porta/ · [简体中文](./README.zh-CN.md)
 
-> A lightweight macOS menu-bar app that surfaces and kills orphan listening ports left by coding agents.
+<p align="center">
+  <img src="assets/app_icon.svg" width="112" alt="Porta app icon" />
+</p>
 
-When AI coding agents (or any dev tool) leave processes running after a session ends, those processes keep holding TCP ports. Porta sits in your menu bar, shows you all matching LISTEN-state ports, and lets you kill the owning process with one click.
+> A lightweight macOS menu-bar app for seeing and managing TCP listening ports.
+
+Web servers, databases, background tools, and desktop apps can all keep TCP ports open. Porta shows matching LISTEN-state ports in your menu bar, identifies the owning process, exposure scope, and process age, and lets you inspect or stop the process with one click.
 
 ## Screenshots
 
 <table>
   <tr>
-    <td><img src="assets/screenshot_main.png" width="340" alt="Port list — scope badge, process name, PID, relative uptime"/></td>
-    <td><img src="assets/screenshot_settings.png" width="260" alt="Settings — port presets, custom ports, refresh interval, launch at login"/></td>
+    <td><img src="assets/screenshot_main.png" width="300" alt="Port list in Light appearance — scope and color-coded process-age badges, process name, and PID"/></td>
+    <td><img src="assets/screenshot_main_dark.png" width="300" alt="Port list in Dark appearance — scope and color-coded process-age badges, process name, and PID"/></td>
+    <td><img src="assets/screenshot_settings.png" width="230" alt="Settings — port presets, custom ports, refresh interval, and launch at login"/></td>
   </tr>
   <tr>
-    <td align="center"><em>Port list</em></td>
+    <td align="center"><em>Port list · Light</em></td>
+    <td align="center"><em>Port list · Dark</em></td>
     <td align="center"><em>Settings</em></td>
   </tr>
 </table>
 
 ## Features
 
-- **Detect listening ports** — powered by `lsof`, shows TCP LISTEN-state ports from your configured dev tools
+- **Detect listening ports** — powered by `lsof`, shows matching TCP LISTEN-state ports and their owning processes
 - **Kill with one click** — SIGTERM → 2 s wait → SIGKILL, with confirmation dialog and ownership re-check before signaling
 - **Scope badge** — each port shows `local` (localhost-only) or `public` (all interfaces) so you know your exposure at a glance
-- **Relative uptime** — see how long the process has been running ("5h ago", "2 min ago")
+- **Color-coded process age** — a compact age pill helps triage listeners: green under 24 hours, amber from 1 day to under 3 days, and red from 3 days onward
+- **Activity Monitor shortcut** — open Activity Monitor from any row with the process name already copied for quick lookup
 - **Monitor All Ports** — toggle in the footer to bypass filters and see every TCP LISTEN port instantly; macOS system daemons (ControlCenter, mDNSResponder, etc.) are always hidden
 - **Configurable presets** — toggle by tool category: Node.js/npm, Vite/Webpack, Python, Ruby/Rails, Go, Java/Spring, PostgreSQL, MySQL, Redis, MongoDB, Common Dev
 - **Custom ports** — add individual port numbers or ranges (e.g. `9000–9010`) with per-entry validation
 - **Adjustable refresh** — 1 s, 3 s, 5 s, 10 s, 30 s, or 60 s polling interval
 - **Launch at login** — stay ready in the background via `SMAppService`
+- **Automatic appearance** — follows macOS Light, Dark, and Auto appearance with no separate theme setting
 - **English / Simplified Chinese** — switch language in-app (header translate button) independently of your OS locale; choice is remembered across sessions
-- **Lightweight** — menu-bar only, no Dock icon, near-zero CPU/memory, no third-party dependencies
+- **Native and lightweight** — dedicated macOS app icon, menu-bar-only UI, no Dock icon, near-zero CPU/memory, and no third-party dependencies
 
 ## Prerequisites
 
@@ -73,7 +81,7 @@ open /path/to/Porta.app
 ## Usage
 
 1. Click the plug icon in the menu bar to open the port list
-2. Each card shows: port number + scope badge, process name, PID, and relative start time
+2. Each row shows the port, exposure scope, color-coded process age, process name, and PID
 3. Click the magnifying glass to open Activity Monitor (process name is copied to clipboard — press **⌘F** and paste to find it)
 4. Click **✕** to kill the owning process (confirmation required)
 5. Click the filter icon (bottom-center) to toggle **Monitor All Ports** — bypasses your preset/custom filters and shows every TCP listener
@@ -89,6 +97,7 @@ See [`docs/architecture.md`](./docs/architecture.md) for component structure, ke
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| [v1.2.0](./CHANGELOG.md#120---2026-07-16) | 2026-07-16 | Dedicated app icon, color-coded process-age pills, automatic Light/Dark appearance |
 | [v1.1.0](./CHANGELOG.md#110---2026-06-27) | 2026-06-27 | In-app Simplified Chinese, Monitor All Ports toggle, system daemon exclusion |
 | [v1.0.0](./CHANGELOG.md#100---2026-06-26) | 2026-06-26 | Initial release — scope badge, relative uptime, presets, custom ports, 28 unit tests |
 
