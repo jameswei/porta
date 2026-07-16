@@ -14,7 +14,7 @@ Web 服务器、数据库、后台工具和桌面应用都可能持续占用 TCP
 
 <table>
   <tr>
-    <td><img src="assets/screenshot_main.png" width="300" alt="浅色外观端口列表 — 暴露范围与进程时长标识、进程名称和 PID"/></td>
+    <td><img src="website/assets/screenshot_main.png" width="300" alt="浅色外观端口列表 — 暴露范围与进程时长标识、进程名称和 PID"/></td>
     <td><img src="assets/screenshot_main_dark.png" width="300" alt="深色外观端口列表 — 暴露范围与进程时长标识、进程名称和 PID"/></td>
     <td><img src="assets/screenshot_settings.png" width="230" alt="设置 — 端口预设、自定义端口、刷新间隔和开机自启"/></td>
   </tr>

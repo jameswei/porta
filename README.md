@@ -16,7 +16,7 @@ Web servers, databases, background tools, and desktop apps can all keep TCP port
 
 <table>
   <tr>
-    <td><img src="assets/screenshot_main.png" width="300" alt="Port list in Light appearance — scope and color-coded process-age badges, process name, and PID"/></td>
+    <td><img src="website/assets/screenshot_main.png" width="300" alt="Port list in Light appearance — scope and color-coded process-age badges, process name, and PID"/></td>
     <td><img src="assets/screenshot_main_dark.png" width="300" alt="Port list in Dark appearance — scope and color-coded process-age badges, process name, and PID"/></td>
     <td><img src="assets/screenshot_settings.png" width="230" alt="Settings — port presets, custom ports, refresh interval, and launch at login"/></td>
   </tr>
