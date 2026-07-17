@@ -97,6 +97,7 @@ See [`docs/architecture.md`](./docs/architecture.md) for component structure, ke
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| [v1.2.1](./CHANGELOG.md#121---2026-07-17) | 2026-07-17 | Fixed idle power drain — port polling now runs only while the popover is open |
 | [v1.2.0](./CHANGELOG.md#120---2026-07-16) | 2026-07-16 | Dedicated app icon, color-coded process-age pills, automatic Light/Dark appearance |
 | [v1.1.0](./CHANGELOG.md#110---2026-06-27) | 2026-06-27 | In-app Simplified Chinese, Monitor All Ports toggle, system daemon exclusion |
 | [v1.0.0](./CHANGELOG.md#100---2026-06-26) | 2026-06-26 | Initial release — scope badge, relative uptime, presets, custom ports, 28 unit tests |

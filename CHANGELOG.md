@@ -3,6 +3,18 @@
 All notable changes to Porta are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.1] - 2026-07-17
+
+### Fixed
+
+- **Idle power drain** — polling previously kept running `lsof` at the refresh interval indefinitely once the popover had been opened, even after it closed, blocking App Nap and accumulating Energy Impact in Activity Monitor. Port polling now starts when the popover opens and stops when it closes — zero background `lsof` activity
+- Refresh timer now sets a 10% tolerance so macOS can coalesce timer wakeups while the popover is open
+- Latent pipe deadlock in `lsof` subprocess handling — output is now drained before waiting for process exit, so output exceeding the 64 KB pipe buffer can no longer hang detection
+
+### Changed
+
+- `PortDetector` is now a single app-level instance owned by `AppDelegate` and injected into the UI, instead of being created by the view layer
+
 ## [1.2.0] - 2026-07-16
 
 ### Added
