@@ -43,9 +43,14 @@ class PortDetector: ObservableObject {
 
     private func startMonitoringTimer() {
         monitoringTimer?.invalidate()
-        monitoringTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(settings.refreshIntervalSeconds), repeats: true) { [weak self] _ in
+        let interval = TimeInterval(settings.refreshIntervalSeconds)
+        let timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             self?.refresh()
         }
+        // Exact fire times don't matter for a port list; tolerance lets the
+        // system coalesce this wakeup with others to save power.
+        timer.tolerance = interval * 0.1
+        monitoringTimer = timer
     }
 
     private func restartMonitoringTimer() {
@@ -237,13 +242,21 @@ class PortDetector: ObservableObject {
 
         do {
             try process.run()
-            process.waitUntilExit()
         } catch {
             return .failure(.launchFailed(error.localizedDescription))
         }
 
+        // Drain both pipes before waiting for exit: lsof blocks once a pipe's
+        // 64 KB kernel buffer fills, so waitUntilExit-before-read can deadlock
+        // on large output. stderr is drained concurrently for the same reason.
+        var stderrData = Data()
+        let stderrRead = DispatchWorkItem {
+            stderrData = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+        }
+        DispatchQueue.global(qos: .userInitiated).async(execute: stderrRead)
         let stdoutData = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
-        let stderrData = stderrPipe.fileHandleForReading.readDataToEndOfFile()
+        stderrRead.wait()
+        process.waitUntilExit()
         guard let output = String(data: stdoutData, encoding: .utf8),
               let errorOutput = String(data: stderrData, encoding: .utf8) else {
             return .failure(.unreadableOutput)

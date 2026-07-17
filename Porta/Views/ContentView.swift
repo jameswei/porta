@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 
 struct ContentView: View {
-    @StateObject var portDetector = PortDetector()
+    @ObservedObject var portDetector: PortDetector
     @StateObject private var settings = PortSettings.shared
     @EnvironmentObject var lm: LanguageManager
     @State private var showingSettings = false
@@ -103,7 +103,6 @@ struct ContentView: View {
         .padding(12)
         .frame(width: 340)
         .onAppear {
-            portDetector.startMonitoring()
             refreshFocused = true
         }
         .onChange(of: showingSettings) { isPresented in
@@ -271,6 +270,6 @@ struct PortRowView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(portDetector: PortDetector())
         .environmentObject(LanguageManager.shared)
 }

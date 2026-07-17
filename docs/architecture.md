@@ -37,7 +37,7 @@ PortSettings (ObservableObject, singleton, UserDefaults-backed)
 
 ## Port Detection
 
-Porta runs `lsof -iTCP -sTCP:LISTEN -P -n -F pcPtn` on a configurable timer (default 5 s). The `-F` flag requests machine-readable output:
+Porta runs `lsof -iTCP -sTCP:LISTEN -P -n -F pcPtn` on a configurable timer (default 5 s). Polling runs only while the popover is visible — `AppDelegate` (the popover delegate) starts monitoring on show and stops it on close, so the app does no `lsof` work in the background. The `-F` flag requests machine-readable output:
 
 - `p<pid>` — process ID
 - `c<cmd>` — command name

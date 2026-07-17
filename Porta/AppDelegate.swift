@@ -1,9 +1,12 @@
 import Cocoa
 import SwiftUI
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var statusBarItem: NSStatusItem?
     var popover: NSPopover?
+    // Single app-wide detector; polling runs only while the popover is visible
+    // because nothing consumes port data when it is closed.
+    private let portDetector = PortDetector()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApplication.shared.setActivationPolicy(.accessory)
@@ -25,8 +28,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         popover = NSPopover()
-        popover?.contentViewController = PopoverContentViewController()
+        popover?.contentViewController = PopoverContentViewController(portDetector: portDetector)
         popover?.behavior = .transient
+        popover?.delegate = self
+    }
+
+    // MARK: - NSPopoverDelegate
+
+    func popoverWillShow(_ notification: Notification) {
+        portDetector.startMonitoring()
+    }
+
+    func popoverDidClose(_ notification: Notification) {
+        portDetector.stopMonitoring()
     }
 
     @objc func togglePopover(_ sender: Any?) {
@@ -51,7 +65,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 // with the .cursorUpdate option. Without this, macOS delivers cursor events to
 // whatever window is behind the popover on non-interactive areas.
 private final class PopoverContentViewController: NSViewController {
-    private let hosting = NSHostingController(rootView: AnyView(ContentView().environmentObject(LanguageManager.shared)))
+    private let hosting: NSHostingController<AnyView>
+
+    init(portDetector: PortDetector) {
+        hosting = NSHostingController(rootView: AnyView(
+            ContentView(portDetector: portDetector).environmentObject(LanguageManager.shared)
+        ))
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
 
     override func loadView() {
         view = CursorCapturingView()

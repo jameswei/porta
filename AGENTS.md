@@ -61,6 +61,7 @@ PortSettings (UserDefaults-backed)
 - Only LISTEN-state TCP ports are shown (not established connections, not UDP)
 - Filtered by `PortSettings.activePorts` — the union of enabled preset groups and user-added custom ports
 - Default refresh interval: 5 seconds (user-configurable)
+- Polling runs only while the popover is open (started/stopped by `AppDelegate` via `NSPopoverDelegate`) — no background `lsof` activity when closed
 
 ## Kill Strategy
 
