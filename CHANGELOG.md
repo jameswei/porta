@@ -3,6 +3,16 @@
 All notable changes to Porta are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.2] - 2026-07-24
+
+### Added
+
+- DMG distribution with an Applications shortcut alongside the existing ZIP release asset
+
+### Changed
+
+- Download instructions now describe both formats and the app-specific macOS security exception for unsigned releases
+
 ## [1.2.1] - 2026-07-17
 
 ### Fixed
