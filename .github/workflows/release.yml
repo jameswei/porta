@@ -35,11 +35,21 @@ jobs:
         run: |
           cd .build/dd/Build/Products/Release
           zip -r Porta.zip Porta.app
+          mkdir dmg
+          ditto Porta.app dmg/Porta.app
+          ln -s /Applications dmg/Applications
+          hdiutil create \
+            -volname Porta \
+            -srcfolder dmg \
+            -ov \
+            -format UDZO \
+            Porta.dmg
 
       - name: Create GitHub Release
         run: |
           gh release create "${{ github.ref_name }}" \
             .build/dd/Build/Products/Release/Porta.zip \
+            .build/dd/Build/Products/Release/Porta.dmg \
             --title "Porta ${{ github.ref_name }}" \
             --generate-notes
         env:

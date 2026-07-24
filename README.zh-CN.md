@@ -66,15 +66,20 @@ open Porta.xcodeproj
 
 ## 运行已下载的 Release
 
-如果从 GitHub Releases 下载 `.app` 后 macOS 显示 Gatekeeper 警告（因为构建未使用付费 Developer ID 签名）：
+GitHub Releases 提供两种分发格式：
 
-```bash
-# 方式 A — 移除隔离标记
-xattr -cr /path/to/Porta.app
-open /path/to/Porta.app
+- **DMG** — 打开 `Porta.dmg`，然后将 Porta 拖入“应用程序”
+- **ZIP** — 解压 `Porta.zip`，然后将 `Porta.app` 移到你想要的位置
 
-# 方式 B — 右键点击 .app → 打开 → "仍要打开"
-```
+Porta 的 Release 构建目前没有代码签名，也没有经过 Apple 公证，因此 macOS 无法验证开发者，并可能阻止首次启动。只有在确认 Porta 来自[官方 GitHub Releases 页面](https://github.com/jameswei/porta/releases)时才应继续。
+
+在不全局关闭 Gatekeeper 的情况下允许运行 Porta：
+
+1. 先尝试打开一次 `Porta.app`
+2. 前往 **系统设置 → 隐私与安全性**
+3. 在**安全性**中点击**仍要打开**，然后确认**打开**
+
+这只会为 Porta 添加例外。详见 [Apple 关于打开未知开发者 App 的说明](https://support.apple.com/zh-cn/guide/mac-help/mh40616/mac)。
 
 ## 使用方法
 

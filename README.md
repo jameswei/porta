@@ -68,15 +68,20 @@ In Xcode:
 
 ## Running a Downloaded Release
 
-If you download a `.app` from GitHub Releases and macOS shows a Gatekeeper warning (because the build isn't signed with a paid Developer ID):
+GitHub Releases offers two distribution formats:
 
-```bash
-# Option A — strip the quarantine flag
-xattr -cr /path/to/Porta.app
-open /path/to/Porta.app
+- **DMG** — open `Porta.dmg`, then drag Porta to Applications
+- **ZIP** — extract `Porta.zip`, then move `Porta.app` wherever you prefer
 
-# Option B — right-click the .app → Open → "Open Anyway"
-```
+Porta release builds are not code-signed or notarized, so macOS cannot verify the developer and may block the first launch. Only continue if you downloaded Porta from the [official GitHub Releases page](https://github.com/jameswei/porta/releases).
+
+To allow Porta without disabling Gatekeeper globally:
+
+1. Try to open `Porta.app` once
+2. Go to **System Settings → Privacy & Security**
+3. Under **Security**, click **Open Anyway**, then confirm **Open**
+
+This creates an exception for Porta only. See [Apple's guidance for opening an app from an unknown developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac).
 
 ## Usage
 
